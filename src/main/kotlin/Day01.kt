@@ -5,14 +5,9 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    var last = input[0].toInt()
-    var increases = 0
-    input.subList(1, input.size).map(String::toInt).forEach {
-        if (it > last) { increases++ }
-        last = it
-    }
-
-    return increases
+    val ints = input.map(String::toInt)
+    val increases = ints.windowed(2, 1).map { it[1] > it [0] }
+    return increases.filter { it }.size
 }
 
 fun part2(input: List<String>): Int {
