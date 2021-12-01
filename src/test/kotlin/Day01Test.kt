@@ -50,4 +50,23 @@ class Day01Test {
 
         assert(part1(list) == 7 )
     }
+
+    @Test
+    fun `part2 should output the number of increases in the stream using three-element sliding windows`() {
+        val list = listOf(
+            //sample values from problem description
+            199, //  A
+            200, //  A B
+            208, //  A B C
+            210, //    B C D
+            200, //  E   C D
+            207, //  E F   D
+            240, //  E F G
+            269, //    F G H
+            260, //      G H
+            263, //        H
+        ).map(Int::toString)
+
+        assert(part2(list) == 5)
+    }
 }

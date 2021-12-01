@@ -11,5 +11,8 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    val ints = input.map(String::toInt)
+    val windowSums = ints.windowed(3, 1).map { it.sum() }
+    val increases = windowSums.windowed(2, 1).map { it[1] > it [0] }
+    return increases.filter { it }.size
 }
