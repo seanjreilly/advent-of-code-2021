@@ -1,15 +1,18 @@
 fun main() {
     fun part1(input: List<String>): Int {
-        return input.size
+        var last = input[0].toInt()
+        var increases = 0
+        input.subList(1, input.size).map(String::toInt).forEach {
+            if (it > last) { increases++ }
+            last = it
+        }
+
+        return increases
     }
 
     fun part2(input: List<String>): Int {
         return input.size
     }
-
-    // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day01_test")
-    check(part1(testInput) == 1)
 
     val input = readInput("Day01")
     println(part1(input))
