@@ -24,10 +24,7 @@ fun main() {
             Direction.forward to {value -> horizontalPosition += value }
         )
 
-        input
-            .filter(String::isNotBlank)
-            .map(::parse)
-            .forEach {(direction, distance) -> directionActions[direction]!!.invoke(distance) }
+        parseAndProcessCommands(input, directionActions)
         return depth * horizontalPosition
     }
 
@@ -42,11 +39,15 @@ fun main() {
             Direction.forward to {value -> horizontalPosition += value; depth += (aim * value) }
         )
 
+        parseAndProcessCommands(input, directionActions)
+        return depth * horizontalPosition
+    }
+
+    private fun parseAndProcessCommands(input: List<String>, directionActions: Map<Direction, (Int) -> Unit>) {
         input
             .filter(String::isNotBlank)
             .map(::parse)
-            .forEach {(direction, distance) -> directionActions[direction]!!.invoke(distance) }
-        return depth * horizontalPosition
+            .forEach { (direction, distance) -> directionActions[direction]!!.invoke(distance) }
     }
 
     private val parseRegex = """\s*(\w+)\s+(\d+)\s*""".toRegex()
