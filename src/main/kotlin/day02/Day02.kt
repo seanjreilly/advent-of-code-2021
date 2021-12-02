@@ -32,7 +32,21 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        var depth = 0
+        var horizontalPosition = 0
+        var aim = 0
+
+        val directionActions: Map<Direction, (Int) -> Unit> = mapOf(
+            Direction.up to {value -> aim -= value},
+            Direction.down to {value -> aim += value},
+            Direction.forward to {value -> horizontalPosition += value; depth += (aim * value) }
+        )
+
+        input
+            .filter(String::isNotBlank)
+            .map(::parse)
+            .forEach {(direction, distance) -> directionActions[direction]!!.invoke(distance) }
+        return depth * horizontalPosition
     }
 
     private val parseRegex = """\s*(\w+)\s+(\d+)\s*""".toRegex()

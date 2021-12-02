@@ -62,4 +62,35 @@ class Day02Test {
         assert(result.first == Direction.forward)
         assert(result.second == 5)
     }
+
+    @Test
+    fun `part2 should adjust aim, calculate depth from aim when horizontal distance is applied, and return  the multiple of horizontal distance and depth`() {
+        val input = listOf(
+            "forward 5", //horizontal position 5, aim 0, depth doesn't change because aim is 0
+            "down 5", // horizontal position 5, aim 5, depth 0 (down *increases* aim)
+            "forward 8", //horizontal position 13, depth 5 * 8 = 40, aim 5
+            "up 3", //horizontal position 13, depth 40, aim 2 (up *decreases* aim)
+            "down 8", //horizontal position 13, depth 40, aim 10
+            "forward 2", //horizontal position 15, depth = 40 + ( 2* 10) = 60, aim 60
+        )
+        val expectedFinalHorizontalPosition = 15
+        val expectedFinalDepth = 60
+
+        val result = part2(input)
+
+        assert(result == expectedFinalHorizontalPosition * expectedFinalDepth)
+    }
+
+    @Test
+    fun `part2 should ignore blank lines`() {
+        val input = listOf(
+            "",
+            "   ",
+            ""
+        )
+
+        val result = part2(input)
+
+        assert(result == 0)
+    }
 }
