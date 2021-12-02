@@ -24,7 +24,7 @@ class Day02Test {
     fun `part1 should calculate the multiple of horizontal distance and depth`() {
         val input = listOf(
             "forward 5", //horizontal position 5, depth 0
-            "down 5", // horizontal position depth 5 (down *increases* depth)
+            "down 5", // horizontal position 5 depth 5 (down *increases* depth)
             "forward 8", //horizontal position 13, depth 5
             "up 3", //horizontal position 13, depth 2 (up *decreases* depth)
             "down 8", //horizontal position 13, depth 10
