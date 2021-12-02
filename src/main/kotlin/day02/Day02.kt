@@ -52,7 +52,7 @@ private fun parseAndProcessCommands(input: List<String>, directionActions: Map<D
 
 private val parseRegex = """\s*(\w+)\s+(\d+)\s*""".toRegex()
 
-fun parse(input: String): Pair<Direction, Int> {
+internal fun parse(input: String): Pair<Direction, Int> {
     val match = requireNotNull(parseRegex.matchEntire(input)) { "invalid line '${input}'" }
     val (rawDirection, value) = match.destructured
     return Pair(Direction.valueOf(rawDirection), value.toInt())
