@@ -1,13 +1,11 @@
-package day02.day02
+package day02
 
-import day02.Day02
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
 class Day02Test {
-    private val systemUnderTest = Day02()
 
     @Test
     fun `part1 should ignore blank lines`() {
@@ -17,7 +15,7 @@ class Day02Test {
             ""
         )
 
-        val result = systemUnderTest.part1(input)
+        val result = part1(input)
 
         assert(result == 0)
     }
@@ -33,15 +31,15 @@ class Day02Test {
             "forward 2", //horizontal position 15, depth 10
         )
 
-        val result = systemUnderTest.part1(input)
+        val result = part1(input)
 
         assert(result == 150)
     }
 
     @ParameterizedTest
     @MethodSource("parseInstructionValues")
-    fun `parseInstruction should return a direction and a value`(input : String, direction: Day02.Direction, distance: Int) {
-        val result : Pair<Day02.Direction, Int> = systemUnderTest.parse(input)
+    fun `parseInstruction should return a direction and a value`(input : String, direction: Direction, distance: Int) {
+        val result : Pair<Direction, Int> = parse(input)
         assert(result.first == direction)
         assert(result.second == distance)
     }
@@ -50,9 +48,9 @@ class Day02Test {
         @JvmStatic
         fun parseInstructionValues() : List<Arguments> {
             return listOf(
-                Arguments.of("forward 5", Day02.Direction.forward, 5),
-                Arguments.of("up 27", Day02.Direction.up, 27),
-                Arguments.of("down 9", Day02.Direction.down, 9)
+                Arguments.of("forward 5", Direction.forward, 5),
+                Arguments.of("up 27", Direction.up, 27),
+                Arguments.of("down 9", Direction.down, 9)
             )
         }
     }
@@ -60,8 +58,8 @@ class Day02Test {
     @Test
     fun `parseInstruction should ignore extra whitespace`() {
         val input = "     forward    5   "
-        val result : Pair<Day02.Direction, Int> = systemUnderTest.parse(input)
-        assert(result.first == Day02.Direction.forward)
+        val result : Pair<Direction, Int> = parse(input)
+        assert(result.first == Direction.forward)
         assert(result.second == 5)
     }
 }

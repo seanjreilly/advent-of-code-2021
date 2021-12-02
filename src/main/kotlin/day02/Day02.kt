@@ -3,32 +3,30 @@ import readInput
 
 fun main() {
     val input = readInput("Day02")
-    val day02 = Day02()
-    println(day02.part1(input))
-    println(day02.part2(input))
+    println(part1(input))
+    println(part2(input))
 }
 
-class Day02 {
-
-    var depth = 0
-    var horizontalPosition = 0
-
+    @Suppress("EnumEntryName")
     enum class Direction {
         up,
         down,
         forward
     }
 
-    val directionActions: Map<Direction, (Int) -> Unit> = mapOf(
-        Direction.up to {value -> depth -= value},
-        Direction.down to {value -> depth += value},
-        Direction.forward to {value -> horizontalPosition += value }
-    )
-
     fun part1(input: List<String>): Int {
+        var depth = 0
+        var horizontalPosition = 0
+
+        val directionActions: Map<Direction, (Int) -> Unit> = mapOf(
+            Direction.up to {value -> depth -= value},
+            Direction.down to {value -> depth += value},
+            Direction.forward to {value -> horizontalPosition += value }
+        )
+
         input
             .filter(String::isNotBlank)
-            .map(this::parse)
+            .map(::parse)
             .forEach {(direction, distance) -> directionActions[direction]!!.invoke(distance) }
         return depth * horizontalPosition
     }
@@ -44,4 +42,3 @@ class Day02 {
         val (rawDirection, value) = match.destructured
         return Pair(Direction.valueOf(rawDirection), value.toInt())
     }
-}
