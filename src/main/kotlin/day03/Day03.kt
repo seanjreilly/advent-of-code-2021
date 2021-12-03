@@ -30,13 +30,10 @@ private fun invertRawBinaryResult(rawBinaryResult: StringBuilder): String {
 
 private fun countNumberOfSetBitsInEachPosition(input: List<String>): IntArray {
     val oneBits = IntArray(input[0].length)
-    input.forEach { line ->
-        for (i in line.toCharArray().indices) {
-            if (line[i] == '1') {
-                oneBits[i]++
-            }
-        }
-    }
+    input.flatMap { it.toCharArray().withIndex() }
+        .filter { it.value == '1' }
+        .map { it.index }
+        .forEach {oneBits[it]++}
     return oneBits
 }
 
