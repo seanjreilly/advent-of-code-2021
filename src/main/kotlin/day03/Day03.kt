@@ -28,12 +28,9 @@ private fun BitArray.invert(): BitArray {
 
 //the only possible values for a bit are 1 and 0, so we can compare 1s to the total amount instead of also counting 0s
 private fun convertBitCountsToRawBinaryResult(numberOfSetBitsInEachPosition: IntArray, totalNumberOfRows: Int): BitArray {
-    val rawBinaryResult = StringBuilder()
-    numberOfSetBitsInEachPosition
+    return numberOfSetBitsInEachPosition
         .map { if (it > (totalNumberOfRows / 2)) '1' else '0' } //unspecified condition in the question: we can have a tie if the numbers are equal with an even number of input rows!!!
-        .forEach(rawBinaryResult::append)
-    val rawBinaryResultString = rawBinaryResult.toString()
-    return rawBinaryResultString
+        .joinToString("")
 }
 
 private fun countNumberOfSetBitsInEachPosition(input: List<BitArray>): IntArray {
