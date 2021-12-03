@@ -29,6 +29,11 @@ fun part2(input: List<String>): UInt {
     return oxygenGeneratorRating * co2ScrubberRating
 }
 
+/*
+    Each round consider the nth position in each bit array and either keep or reject
+    the entries with the most common bit value.
+    Keep iterating until there is only one value left in the list, and then return that
+ */
 private fun filterOnMostCommonValueInEachPosition(input: List<String>, keepMostCommon: Boolean): UInt {
 
     fun predicate(valueInBitArray:Char, mostCommonValue: Char) : Boolean {
