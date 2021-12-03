@@ -67,9 +67,14 @@ private fun Char.not(): Char {
 
 //the only possible values for a bit are 1 and 0, so we can compare 1s to the total amount instead of also counting 0s
 private fun convertBitCountsToRawBinaryResult(numberOfSetBitsInEachPosition: IntArray, totalNumberOfRows: Int): BitArray {
-    val threshold: Int = (totalNumberOfRows.toDouble() / 2).roundToInt()
+    val threshold: Int = (totalNumberOfRows.toDouble() / 2).roundToInt() //round up doing the division, not down
+    /*
+    Behaviour with ties is now specified: ties go towards 1
+    In the case where we want to calculate the least common value and use 0 for a tie,
+    this is actually the same as finding the most common value using 1 for a tie, and negating.
+     */
     return numberOfSetBitsInEachPosition
-        .map { if (it >= threshold) '1' else '0' } //unspecified condition in the question: we can have a tie if the numbers are equal with an even number of input rows!!!
+        .map { if (it >= threshold) '1' else '0' }
         .joinToString("")
 }
 
