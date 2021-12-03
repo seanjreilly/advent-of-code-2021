@@ -21,30 +21,33 @@ fun part1(input: List<String>): UInt {
 
 fun part2(input: List<String>): UInt {
     //find oxygen generator rating
-    val potentialOxygenGeneratorRatings: MutableList<BitArray> = input.toMutableList()
-    var round = 0
-    while (potentialOxygenGeneratorRatings.size > 1) {
-        val numberOfSetBitsInEachPosition = countNumberOfSetBitsInEachPosition(potentialOxygenGeneratorRatings)
-        val rawBinaryResult = convertBitCountsToRawBinaryResult(numberOfSetBitsInEachPosition, potentialOxygenGeneratorRatings.size)
-        val filterValue = rawBinaryResult[round]
-        potentialOxygenGeneratorRatings.removeAll { it[round] != filterValue }
-        round++
-    }
-    val oxygenGeneratorRating = potentialOxygenGeneratorRatings.first().toUInt()
+    val oxygenGeneratorRating = filterOnMostCommonValueInEachPosition(input, true)
 
     //find CO2 scrubber rating
-    val potentialCO2ScrubberRatings: MutableList<BitArray> = input.toMutableList()
-    round = 0
-    while (potentialCO2ScrubberRatings.size > 1) {
-        val numberOfSetBitsInEachPosition = countNumberOfSetBitsInEachPosition(potentialCO2ScrubberRatings)
-        val rawBinaryResult = convertBitCountsToRawBinaryResult(numberOfSetBitsInEachPosition, potentialCO2ScrubberRatings.size)
-        val filterValue = rawBinaryResult[round].not()
-        potentialCO2ScrubberRatings.removeAll { it[round] != filterValue }
-        round++
-    }
-    val co2ScrubberRating = potentialCO2ScrubberRatings.first().toUInt()
+    val co2ScrubberRating = filterOnMostCommonValueInEachPosition(input, false)
 
     return oxygenGeneratorRating * co2ScrubberRating
+}
+
+private fun filterOnMostCommonValueInEachPosition(input: List<String>, keepMostCommon: Boolean): UInt {
+
+    fun predicate(valueInBitArray:Char, mostCommonValue: Char) : Boolean {
+        if (keepMostCommon) {
+            return valueInBitArray != mostCommonValue
+        }
+        return valueInBitArray != mostCommonValue.not()
+    }
+
+    val potentialRatings: MutableList<BitArray> = input.toMutableList()
+    var round = 0
+    while (potentialRatings.size > 1) {
+        val numberOfSetBitsInEachPosition = countNumberOfSetBitsInEachPosition(potentialRatings)
+        val rawBinaryResult = convertBitCountsToRawBinaryResult(numberOfSetBitsInEachPosition, potentialRatings.size)
+        val filterValue = rawBinaryResult[round]
+        potentialRatings.removeAll { predicate(it[round], filterValue) }
+        round++
+    }
+    return potentialRatings.first().toUInt()
 }
 
 typealias BitArray = String
