@@ -20,12 +20,8 @@ fun part1(input: List<String>): UInt {
 }
 
 fun part2(input: List<String>): UInt {
-    //find oxygen generator rating
     val oxygenGeneratorRating = filterOnMostCommonValueInEachPosition(input, true)
-
-    //find CO2 scrubber rating
     val co2ScrubberRating = filterOnMostCommonValueInEachPosition(input, false)
-
     return oxygenGeneratorRating * co2ScrubberRating
 }
 
