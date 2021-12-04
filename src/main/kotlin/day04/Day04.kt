@@ -9,11 +9,8 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    val drawOrder = input.first().trim().split(",").map { it.trim().toInt() }
-    val bingoBoards = input
-        .drop(1) //skip the draw order
-        .windowed(6, 6).map { it.drop(1) } //skip the blank line at the beginning of each board definition
-        .map(::BingoBoard)
+    val drawOrder = parseDrawOrder(input)
+    val bingoBoards = parseBingoBoards(input)
 
     drawOrder.forEach { number ->
         bingoBoards.forEach { board ->
@@ -29,6 +26,14 @@ fun part1(input: List<String>): Int {
 fun part2(input: List<String>): Int {
     return input.size
 }
+
+private fun parseBingoBoards(input: List<String>) = input
+    .drop(1) //skip the draw order
+    .windowed(6, 6).map { it.drop(1) } //skip the blank line at the beginning of each board definition
+    .map(::BingoBoard)
+
+private fun parseDrawOrder(input: List<String>) =
+    input.first().trim().split(",").map { it.trim().toInt() }
 
 internal class BingoBoard(input: List<String>) {
     companion object {
@@ -49,7 +54,7 @@ internal class BingoBoard(input: List<String>) {
     }
 
     fun markNumber(number: Int): Int? {
-        //TODO: blow up if already a winner
+        //TODO: blow up if this board is already a winner
 
         rows.forEach { it.remove(number) }
         columns.forEach { it.remove(number) }
