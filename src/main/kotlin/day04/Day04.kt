@@ -24,7 +24,23 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    val drawOrder = parseDrawOrder(input)
+    val bingoBoards = parseBingoBoards(input).toMutableList()
+
+    drawOrder.forEach { number ->
+        //use a mutable iterator so we can remove boards as we're looping over the boards
+        val mutableIterator = bingoBoards.iterator()
+        mutableIterator.forEach { board ->
+            val score = board.markNumber(number)
+            if (score != null) {
+                if (bingoBoards.size == 1) {
+                    return score
+                }
+                mutableIterator.remove()
+            }
+        }
+    }
+    throw IllegalStateException("no board won!")
 }
 
 private fun parseBingoBoards(input: List<String>) = input
