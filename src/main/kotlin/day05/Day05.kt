@@ -9,11 +9,18 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-
     return input
         .filter { !it.isBlank() }
         .map { parseLine(it) }
         .filter { it.isHorizontal || it.isVertical }
+        .flatMap { it.getPoints() }
+        .groupingBy { it }.eachCount().filter { it.value > 1 }.size
+}
+
+fun part2(input: List<String>): Int {
+    return input
+        .filter { !it.isBlank() }
+        .map { parseLine(it) }
         .flatMap { it.getPoints() }
         .groupingBy { it }.eachCount().filter { it.value > 1 }.size
 }
@@ -23,10 +30,6 @@ private fun parseLine(line:String) : Line {
     val start = Point(x1.toInt(), y1.toInt())
     val end = Point(x2.toInt(), y2.toInt())
     return Line(start,end)
-}
-
-fun part2(input: List<String>): Int {
-    return input.size
 }
 
 val LINE_DEFINITION_REGEX = """(\d+),(\d+).+?(\d+),(\d+)""".toRegex()
@@ -40,7 +43,8 @@ internal data class Line(val start: Point, val end: Point) {
         if (isVertical) {
             return range(start.y, end.y).map { Point(start.x, it) }.toSet()
         }
-        throw UnsupportedOperationException("line must be horizontal or vertical")
+        //we only need to support 45 degrees
+        return range(start.x, end.x).zip(range(start.y, end.y)).map { (x,y) -> Point(x,y) }.toSet()
     }
 
     val isHorizontal = start.y == end.y
