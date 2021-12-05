@@ -9,18 +9,22 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return input
-        .filter { !it.isBlank() }
-        .map { parseLine(it) }
-        .filter { it.isHorizontal || it.isVertical }
-        .flatMap { it.getPoints() }
-        .groupingBy { it }.eachCount().filter { it.value > 1 }.size
+    return countOverlaps(input, false)
 }
 
 fun part2(input: List<String>): Int {
-    return input
+    return countOverlaps(input, true)
+}
+
+private fun countOverlaps(input: List<String>, allowDiagonals: Boolean): Int {
+    var lines = input
         .filter { !it.isBlank() }
         .map { parseLine(it) }
+
+    if (!allowDiagonals) {
+        lines = lines.filter { it.isHorizontal || it.isVertical }
+    }
+    return lines
         .flatMap { it.getPoints() }
         .groupingBy { it }.eachCount().filter { it.value > 1 }.size
 }
