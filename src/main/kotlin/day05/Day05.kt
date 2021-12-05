@@ -17,14 +17,10 @@ fun part2(input: List<String>): Int {
 }
 
 private fun countOverlaps(input: List<String>, allowDiagonals: Boolean): Int {
-    var lines = input
+    return input
         .filter { !it.isBlank() }
         .map { parseLine(it) }
-
-    if (!allowDiagonals) {
-        lines = lines.filter { it.isHorizontal || it.isVertical }
-    }
-    return lines
+        .filter { if (allowDiagonals) { true } else {it.isVertical || it.isHorizontal } }
         .flatMap { it.getPoints() }
         .groupingBy { it }.eachCount().filter { it.value > 1 }.size
 }
