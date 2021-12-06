@@ -16,11 +16,11 @@ fun part2(input: String): Long {
     return countFish(parseInitialFishCount(input), 256)
 }
 
-private fun countFish(count: FishCount, generations: Int): Long {
-    if (generations == 0) {
+private fun countFish(count: FishCount, generationsRemaining: Int): Long {
+    if (generationsRemaining == 0) {
         return count.totalFish()
     }
-    return countFish(count.nextDay(), generations - 1)
+    return countFish(count.nextDay(), generationsRemaining - 1)
 }
 
 internal fun parseInitialFishCount(input: String): FishCount {
