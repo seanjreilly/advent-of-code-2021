@@ -32,7 +32,7 @@ class Day06Test {
     fun `parseFishCount should return a fish count with the appropriate number of fish in each frame`() {
         val input = "3,4,3,1,2"
 
-        val result:FishCount = parseFishCount(input)
+        val result:FishCount = parseInitialFishCount(input)
 
         assert(result.counts == listOf(0L,1L,1L,2L,1L,0L,0L,0L,0L))
     }
@@ -60,7 +60,7 @@ class Day06Test {
 
         @Test
         fun `a fish count with known input should produce the correct value after 18 days`() {
-            var count = parseFishCount("3,4,3,1,2")
+            var count = parseInitialFishCount("3,4,3,1,2")
             (1..18).forEach { _ -> count = count.nextDay() }
 
             val result = count.totalFish()
@@ -70,7 +70,7 @@ class Day06Test {
 
         @Test
         fun `a fish count with known input should produce the correct value after 80 days`() {
-            var count = parseFishCount("3,4,3,1,2")
+            var count = parseInitialFishCount("3,4,3,1,2")
             (1..80).forEach { _ -> count = count.nextDay() }
 
             val result = count.totalFish()

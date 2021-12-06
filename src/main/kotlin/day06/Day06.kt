@@ -9,18 +9,18 @@ fun main() {
 }
 
 fun part1(input: String): Long {
-    var count = parseFishCount(input)
+    var count = parseInitialFishCount(input)
     (1..80).forEach { _ -> count = count.nextDay() }
     return count.totalFish()
 }
 
 fun part2(input: String): Long {
-    var count = parseFishCount(input)
+    var count = parseInitialFishCount(input)
     (1..256).forEach { _ -> count = count.nextDay() }
     return count.totalFish()
 }
 
-internal fun parseFishCount(input: String): FishCount {
+internal fun parseInitialFishCount(input: String): FishCount {
     val initialCounts: Map<Int, Int> = input
         .split(',')
         .map(String::toInt)
