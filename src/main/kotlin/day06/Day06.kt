@@ -8,14 +8,14 @@ fun main() {
     println(part2(input))
 }
 
-fun part1(input: String): Int {
+fun part1(input: String): Long {
     var count = parseFishCount(input)
     (1..80).forEach { _ -> count = count.nextDay() }
     return count.totalFish()
 }
 
-fun part2(input: String): Int {
-    return input.length
+fun part2(input: String): Long {
+    return input.length.toLong()
 }
 
 internal fun parseFishCount(input: String): FishCount {
@@ -26,12 +26,12 @@ internal fun parseFishCount(input: String): FishCount {
         .groupingBy { it }.eachCount()
         .withDefault { 0 }
 
-    return FishCount((0..8).map { initialCounts[it] ?: 0 }.toList()) //there are zero fish with any timer state not mentioned in the input
+    return FishCount((0..8).map { initialCounts[it] ?: 0 }.map(Int::toLong).toList()) //there are zero fish with any timer state not mentioned in the input
 }
 
-class FishCount(internal val counts: List<Int>) {
+class FishCount(internal val counts: List<Long>) {
     internal constructor(zero: Int, one: Int, two: Int, three: Int, four: Int, five: Int, six: Int, seven: Int, eight: Int) : this(
-        listOf(zero, one, two, three, four, five, six, seven, eight)
+        listOf(zero.toLong(), one.toLong(), two.toLong(), three.toLong(), four.toLong(), five.toLong(), six.toLong(), seven.toLong(), eight.toLong())
     )
 
     fun nextDay(): FishCount {
@@ -41,5 +41,5 @@ class FishCount(internal val counts: List<Int>) {
         return FishCount(nextCounts)
     }
 
-    fun totalFish(): Int = counts.sum()
+    fun totalFish(): Long = counts.sum()
 }

@@ -9,7 +9,7 @@ class Day06Test {
     fun `part1 should count the total number of fish after 80 days`() {
         val result = part1("3,4,3,1,2")
 
-        assert(result == 5934)
+        assert(result == 5934L)
     }
 
     @Test
@@ -18,7 +18,7 @@ class Day06Test {
 
         val result = fishCount.totalFish()
 
-        assert(result == 0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8)
+        assert(result == (0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8).toLong())
     }
 
     @Test
@@ -27,7 +27,7 @@ class Day06Test {
 
         val result:FishCount = parseFishCount(input)
 
-        assert(result.counts == listOf(0,1,1,2,1,0,0,0,0))
+        assert(result.counts == listOf(0L,1L,1L,2L,1L,0L,0L,0L,0L))
     }
 
     @Nested
@@ -38,7 +38,7 @@ class Day06Test {
 
             val result: FishCount = fishCount.nextDay()
 
-            assert(result.counts.subList(0, 8) == listOf(1, 2, 3, 4, 5, 6, 7, 8))
+            assert(result.counts.subList(0, 8) == listOf(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L))
         }
 
         @Test
@@ -48,27 +48,27 @@ class Day06Test {
             val result: FishCount = fishCount.nextDay()
 
             // the "zero" fish move to 6, and a new fish is added to 8 for each zero fish
-            assert(result.counts == listOf(0, 0, 0, 0, 0, 0, 3, 0, 2))
+            assert(result.counts == listOf(0L, 0L, 0L, 0L, 0L, 0L, 3L, 0L, 2L))
         }
 
         @Test
         fun `a fish count with known input should produce the correct value after 18 days`() {
             var count = parseFishCount("3,4,3,1,2")
-            (1..18).forEach { count = count.nextDay() }
+            (1..18).forEach { _ -> count = count.nextDay() }
 
             val result = count.totalFish()
 
-            assert(result == 26)
+            assert(result == 26L)
         }
 
         @Test
         fun `a fish count with known input should produce the correct value after 80 days`() {
             var count = parseFishCount("3,4,3,1,2")
-            (1..80).forEach { count = count.nextDay() }
+            (1..80).forEach { _ -> count = count.nextDay() }
 
             val result = count.totalFish()
 
-            assert(result == 5934)
+            assert(result == 5934L)
         }
     }
 }
