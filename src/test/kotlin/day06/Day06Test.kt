@@ -1,6 +1,5 @@
 package day06
 
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class Day06Test {
@@ -20,10 +19,10 @@ class Day06Test {
     }
 
     @Test
-    fun `totalFishshould return the total number of fish`() {
-        val fishCount = FishCount(0, 1, 2, 3, 4, 5, 6, 7, 8)
+    fun `totalFish should return the total number of fish`() {
+        val fishCount = buildFishCount(0, 1, 2, 3, 4, 5, 6, 7, 8)
 
-        val result = fishCount.totalFish()
+        val result = totalFish(fishCount)
 
         assert(result == (0 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8).toLong())
     }
@@ -37,45 +36,68 @@ class Day06Test {
         assert(result.counts == listOf(0L,1L,1L,2L,1L,0L,0L,0L,0L))
     }
 
-    @Nested
-    inner class FishCountTest {
-        @Test
-        fun `nextDay should produce a new FishCount with values from 8 through 1 decremented by 1`() {
-            val fishCount = FishCount(0, 1, 2, 3, 4, 5, 6, 7, 8)
+    @Test
+    fun `nextGeneration should produce a new FishCount with values from 8 through 1 decremented by 1`() {
+        val fishCount = buildFishCount(0, 1, 2, 3, 4, 5, 6, 7, 8)
 
-            val result: FishCount = fishCount.nextDay()
+        val result: FishCount = nextGeneration(fishCount)
 
-            assert(result.counts.subList(0, 8) == listOf(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L))
-        }
+        assert(result.counts.subList(0, 8) == listOf(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L))
+    }
 
-        @Test
-        fun `nextDay should produce a new FishCount with values from 0 added to 8 and to 6`() {
-            val fishCount = FishCount(2, 0, 0, 0, 0, 0, 0, 1, 0)
+    @Test
+    fun `nextGeneration should produce a new FishCount with values from 0 added to 8 and to 6`() {
+        val fishCount = buildFishCount(2, 0, 0, 0, 0, 0, 0, 1, 0)
 
-            val result: FishCount = fishCount.nextDay()
+        val result: FishCount = nextGeneration(fishCount)
 
-            // the "zero" fish move to 6, and a new fish is added to 8 for each zero fish
-            assert(result.counts == listOf(0L, 0L, 0L, 0L, 0L, 0L, 3L, 0L, 2L))
-        }
+        // the "zero" fish move to 6, and a new fish is added to 8 for each zero fish
+        assert(result.counts == listOf(0L, 0L, 0L, 0L, 0L, 0L, 3L, 0L, 2L))
+    }
 
-        @Test
-        fun `a fish count with known input should produce the correct value after 18 days`() {
-            var count = parseInitialFishCount("3,4,3,1,2")
-            (1..18).forEach { _ -> count = count.nextDay() }
+    @Test
+    fun `a fish count with known input should produce the correct value after 18 days`() {
+        var count = parseInitialFishCount("3,4,3,1,2")
+        (1..18).forEach { _ -> count = nextGeneration(count) }
 
-            val result = count.totalFish()
+        val result = totalFish(count)
 
-            assert(result == 26L)
-        }
+        assert(result == 26L)
+    }
 
-        @Test
-        fun `a fish count with known input should produce the correct value after 80 days`() {
-            var count = parseInitialFishCount("3,4,3,1,2")
-            (1..80).forEach { _ -> count = count.nextDay() }
+    @Test
+    fun `a fish count with known input should produce the correct value after 80 days`() {
+        var count = parseInitialFishCount("3,4,3,1,2")
+        (1..80).forEach { _ -> count = nextGeneration(count) }
 
-            val result = count.totalFish()
+        val result = totalFish(count)
 
-            assert(result == 5934L)
-        }
+        assert(result == 5934L)
+    }
+
+    private fun buildFishCount(
+        zero: Int,
+        one: Int,
+        two: Int,
+        three: Int,
+        four: Int,
+        five: Int,
+        six: Int,
+        seven: Int,
+        eight: Int
+    ): FishCount {
+        return FishCount(
+            listOf(
+                zero.toLong(),
+                one.toLong(),
+                two.toLong(),
+                three.toLong(),
+                four.toLong(),
+                five.toLong(),
+                six.toLong(),
+                seven.toLong(),
+                eight.toLong()
+            )
+        )
     }
 }
