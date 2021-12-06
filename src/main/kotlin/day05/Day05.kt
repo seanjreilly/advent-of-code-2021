@@ -18,7 +18,7 @@ fun part2(input: List<String>): Int {
 
 private fun countOverlaps(input: List<String>, allowDiagonals: Boolean): Int {
     return input
-        .filter { !it.isBlank() }
+        .filter(String::isNotBlank)
         .map { parseLine(it) }
         .filter { if (allowDiagonals) { true } else {it.isVertical || it.isHorizontal } }
         .flatMap { it.getPoints() }
