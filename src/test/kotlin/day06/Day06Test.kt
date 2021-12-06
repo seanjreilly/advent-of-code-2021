@@ -13,6 +13,13 @@ class Day06Test {
     }
 
     @Test
+    fun `part2 should count the total number of fish after 256 days`() {
+        val result = part2("3,4,3,1,2")
+
+        assert(result == 26984457539L)
+    }
+
+    @Test
     fun `totalFishshould return the total number of fish`() {
         val fishCount = FishCount(0, 1, 2, 3, 4, 5, 6, 7, 8)
 

@@ -15,7 +15,9 @@ fun part1(input: String): Long {
 }
 
 fun part2(input: String): Long {
-    return input.length.toLong()
+    var count = parseFishCount(input)
+    (1..256).forEach { _ -> count = count.nextDay() }
+    return count.totalFish()
 }
 
 internal fun parseFishCount(input: String): FishCount {
