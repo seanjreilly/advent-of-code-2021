@@ -9,15 +9,21 @@ fun main() {
 }
 
 fun part1(input: String): Long {
-    var count = parseInitialFishCount(input)
-    (1..80).forEach { _ -> count = count.nextDay() }
-    return count.totalFish()
+    val count = parseInitialFishCount(input)
+    val generations = 80
+    return countFish(count, generations)
 }
 
 fun part2(input: String): Long {
-    var count = parseInitialFishCount(input)
-    (1..256).forEach { _ -> count = count.nextDay() }
-    return count.totalFish()
+    val count = parseInitialFishCount(input)
+    val generations = 256
+    return countFish(count, generations)
+}
+
+private fun countFish(count: FishCount, generations: Int): Long {
+    var count1 = count
+    (1..generations).forEach { _ -> count1 = count1.nextDay() }
+    return count1.totalFish()
 }
 
 internal fun parseInitialFishCount(input: String): FishCount {
