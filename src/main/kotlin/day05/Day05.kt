@@ -1,6 +1,7 @@
 package day05
 
 import readInput
+import kotlin.math.max
 
 fun main() {
     val input = readInput("Day05")
@@ -20,7 +21,7 @@ private fun countOverlaps(input: List<String>, allowDiagonals: Boolean): Int {
     return input
         .filter(String::isNotBlank)
         .map { parseLine(it) }
-        .filter { if (allowDiagonals) { true } else {it.isVertical || it.isHorizontal } }
+        .filter { if (allowDiagonals) { true } else { !it.isDiagonal } }
         .flatMap { it.getPoints() }
         .groupingBy { it }.eachCount().filter { it.value > 1 }.size
 }
@@ -37,20 +38,22 @@ val LINE_DEFINITION_REGEX = """(\d+),(\d+).+?(\d+),(\d+)""".toRegex()
 internal data class Point(val x: Int, val y: Int)
 internal data class Line(val start: Point, val end: Point) {
     fun getPoints() : Set<Point> {
-        if (isHorizontal) {
-            return range(start.x, end.x).map { Point(it, start.y) }.toSet()
-        }
-        if (isVertical) {
-            return range(start.y, end.y).map { Point(start.x, it) }.toSet()
-        }
-        //we only need to support 45 degrees
-        return range(start.x, end.x).zip(range(start.y, end.y)).map { (x,y) -> Point(x,y) }.toSet()
+        //we only need to support vertical, horizontal, and 45 degree diagonal, so we can use a zip if we pad the shorter range
+        return list(start.x, end.x).zipWithExtension(list(start.y, end.y)).map { (x,y) -> Point(x,y) }.toSet()
     }
 
-    val isHorizontal = start.y == end.y
-    val isVertical = start.x == end.x
+    val isDiagonal = start.y != end.y && start.x != end.x
+}
 
-    private fun range(i: Int, j: Int): IntProgression {
-        return if (i < j) { i .. j } else { i downTo j }
-    }
+private fun list(i: Int, j: Int): List<Int> {
+    return (if (i < j) { i .. j } else { i downTo j }).toList()
+}
+
+private fun <T> List<T>.zipWithExtension(other: List<T>): List<Pair<T, T>> {
+    val maxLen = max(this.size, other.size)
+    return this.pad(maxLen).zip(other.pad(maxLen))
+}
+
+internal fun <T> List<T>.pad(expectedSize: Int): List<T> {
+    return this.plus(List(expectedSize - size) { this.last() }) //negative number builds an empty list
 }

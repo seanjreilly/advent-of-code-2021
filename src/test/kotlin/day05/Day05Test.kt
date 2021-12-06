@@ -58,34 +58,34 @@ class Day05Test {
         assert(result == 12)
     }
 
+    @Test
+    fun `pad should extend a list to the desired length`() {
+        val input = listOf("A", "B")
+        val result = input.pad(3)
+        assert(result == listOf("A", "B", "B"))
+    }
+
     @Nested
     inner class LineTest {
         @Test
-        fun `isHorizontal should return true if the endpoints have the same y value`() {
+        fun `isDiagonal should return false if the endpoints have the same y value`() {
             val line = Line(Point(1,1), Point(3,1))
 
-            assert(line.isHorizontal)
+            assert(!line.isDiagonal)
         }
 
         @Test
-        fun `isHorizontal should return false if the endpoints have the different y values`() {
-            val line = Line(Point(1,1), Point(3,2))
-
-            assert(!line.isHorizontal)
-        }
-
-        @Test
-        fun `isVertical should return true if the endpoints have the same x value`() {
+        fun `isDiagonal should return false if the endpoints have the same x value`() {
             val line = Line(Point(1,1), Point(1,3))
 
-            assert(line.isVertical)
+            assert(!line.isDiagonal)
         }
 
         @Test
-        fun `isVertical should return false if the endpoints have the different x values`() {
-            val line = Line(Point(1,1), Point(3,1))
+        fun `isDiagonal should return true if the endpoints have the different x and y values`() {
+            val line = Line(Point(1,1), Point(3,3))
 
-            assert(!line.isVertical)
+            assert(line.isDiagonal)
         }
 
         @Test
