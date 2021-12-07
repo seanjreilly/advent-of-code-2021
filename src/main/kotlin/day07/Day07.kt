@@ -19,7 +19,13 @@ fun part1(input: String): Int {
 }
 
 fun part2(input: String): Int {
-    return input.length
+    val startingHorizontalPositions = input.split(",").map(String::toInt)
+    val costOfPositionChange = {proposedFinalPosition: Int, startingHorizontalPosition: Int  ->
+        //cost is the sum of 0..positionChange
+        val positionChange = abs(proposedFinalPosition - startingHorizontalPosition)
+        (positionChange * (positionChange + 1)) / 2 //thank you, Mr Gauss!
+    }
+    return calculateMinFuelCost(startingHorizontalPositions, costOfPositionChange)
 }
 
 private fun calculateMinFuelCost(startingHorizontalPositions: List<Int>, costOfPositionChange: (Int, Int) -> Int): Int {
