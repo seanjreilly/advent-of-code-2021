@@ -23,7 +23,8 @@ fun part2(input: String): Int {
     val costOfPositionChange = {proposedFinalPosition: Int, startingHorizontalPosition: Int  ->
         //cost is the sum of 0..positionChange
         val positionChange = abs(proposedFinalPosition - startingHorizontalPosition)
-        (positionChange * (positionChange + 1)) / 2 //thank you, Mr Gauss!
+        //this optimisation matters for performance in part 2
+        (positionChange * (positionChange + 1)) / 2 // thank you, Mr Gauss!
     }
     return calculateMinFuelCost(startingHorizontalPositions, costOfPositionChange)
 }
@@ -33,14 +34,9 @@ private fun calculateMinFuelCost(startingHorizontalPositions: List<Int>, costOfP
     val minHorizontalPosition = startingHorizontalPositions.minOrNull()!!
     val maxHorizontalPosition = startingHorizontalPositions.maxOrNull()!!
 
-    //cost of moving between any two horizontal positions is always the same, so de-dup to save on calculations
-    val deDupedStartingHorizontalPositions = startingHorizontalPositions
-        .groupingBy { it }
-        .eachCount() //key is position, value is number of crabs in that position
-
     val result = (minHorizontalPosition..maxHorizontalPosition).map { proposedFinalPosition ->
-        deDupedStartingHorizontalPositions.map { (startingPosition, numberOfCrabs) ->
-            costOfPositionChange(proposedFinalPosition, startingPosition) * numberOfCrabs
+        startingHorizontalPositions.map {
+            costOfPositionChange(proposedFinalPosition, it)
         }.sum()
     }.minOrNull()!!
 
