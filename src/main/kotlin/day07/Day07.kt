@@ -11,14 +11,17 @@ fun main() {
 
 fun part1(input: String): Int {
     val startingHorizontalPositions = input.split(",").map(String::toInt)
+    val costOfPositionChange = {proposedFinalPosition: Int, startingHorizontalPosition: Int  -> abs(proposedFinalPosition - startingHorizontalPosition) }
+
     //bangs are ok because the list is not empty
     val minHorizontalPosition = startingHorizontalPositions.minOrNull()!!
     val maxHorizontalPosition = startingHorizontalPositions.maxOrNull()!!
     val deDupedStartingHorizontalPositions = startingHorizontalPositions.groupingBy { it }.eachCount() //key is position, value is count
 
+
     val result = (minHorizontalPosition..maxHorizontalPosition).map { proposedFinalPosition ->
         deDupedStartingHorizontalPositions.map { (startingPosition, numberOfCrabs) ->
-            abs(proposedFinalPosition - startingPosition) * numberOfCrabs
+            costOfPositionChange(proposedFinalPosition, startingPosition) * numberOfCrabs
         }.sum()
     }.minOrNull()!!
     return result
