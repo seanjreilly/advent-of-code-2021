@@ -32,14 +32,17 @@ private fun calculateMinFuelCost(startingHorizontalPositions: List<Int>, costOfP
     //bangs are ok because the list is not empty
     val minHorizontalPosition = startingHorizontalPositions.minOrNull()!!
     val maxHorizontalPosition = startingHorizontalPositions.maxOrNull()!!
+
+    //cost of moving between any two horizontal positions is always the same, so de-dup to save on calculations
     val deDupedStartingHorizontalPositions = startingHorizontalPositions
         .groupingBy { it }
-        .eachCount() //key is position, value is count
+        .eachCount() //key is position, value is number of crabs in that position
 
     val result = (minHorizontalPosition..maxHorizontalPosition).map { proposedFinalPosition ->
         deDupedStartingHorizontalPositions.map { (startingPosition, numberOfCrabs) ->
             costOfPositionChange(proposedFinalPosition, startingPosition) * numberOfCrabs
         }.sum()
     }.minOrNull()!!
+
     return result
 }
