@@ -58,14 +58,14 @@ internal fun generateDecoder(inputValues: List<EncodedDigit>): DigitDecoder {
     val bAndF = charsInAllSixCharSets.filter { !charsInAllFiveCharSets.contains(it) }.toSet()
     val d = charsInAllFiveCharSets.filter { !charsInAllSixCharSets.contains(it) }.single()
 
-    val five = inputValues.filter { it.size == 5 && it.containsAll(bAndF)}.single()
-    val zero = inputValues.filter {it.size == 6 && !it.contains(d)}.single()
-    val three = inputValues.filter {it.size == 5 && it.containsAll(one)}.single()
-    val two = inputValues.filter { it.size == 5 &&  it != three && it != five }.single()
-    val nine = inputValues.filter { it. size == 6 && it != zero && it.containsAll(one) }.single()
-    val six = inputValues.filter { it.size == 6 && it != zero && it != nine}.single()
+    val five = inputValues.filter { it.size == 5 && it.containsAll(bAndF) }.single()
+    val zero = inputValues.filter { it.size == 6 && !it.contains(d) }.single()
+    val three = inputValues.filter { it.size == 5 && it.containsAll(one) }.single()
+    val two = inputValues.filter { it.size == 5 && it != three && it != five }.single()
+    val nine = inputValues.filter { it.size == 6 && it != zero && it.containsAll(one) }.single()
+    val six = inputValues.filter { it.size == 6 && it != zero && it != nine }.single()
 
-    val result = mapOf(
+    return mapOf(
         zero to "0",
         one to "1",
         two to "2",
@@ -77,7 +77,6 @@ internal fun generateDecoder(inputValues: List<EncodedDigit>): DigitDecoder {
         eight to "8",
         nine to "9"
     )
-    return result
 }
 
 internal fun decodeOutput(encodedLine: EncodedLine) : Int {
