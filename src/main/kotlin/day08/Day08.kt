@@ -9,7 +9,18 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return input.size
+    return input.map {
+        it.split('|')
+            .last()
+            .split(" ")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+        } //each item is a list of non-space characters. each one corresponds to a digit
+        .map {
+            //one, seven, four, or eight
+            it.count { it.length in setOf(2, 3, 4, 7) }
+        }
+        .sum()
 }
 
 fun part2(input: List<String>): Int {
