@@ -9,18 +9,27 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return input.map {
-        it.split('|')
-            .last()
-            .split(" ")
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-        } //each item is a list of non-space characters. each one corresponds to a digit
+    return input
+        .map(::parseEncodedLine)
         .map {
             //one, seven, four, or eight
-            it.count { it.length in setOf(2, 3, 4, 7) }
+            it.outputValues.count() { it.size in setOf(2, 3, 4, 7) }
         }
         .sum()
+}
+
+typealias EncodedDigit = Set<Char>
+data class EncodedLine(val inputValues: List<EncodedDigit>, val outputValues: List<EncodedDigit>)
+
+fun parseEncodedLine(rawLine: String): EncodedLine {
+    val (rawInput, rawOutput) = rawLine.split('|').map { it.trim() }.filter { it.isNotEmpty() }
+    val parseListOfEncodedDigits = { it:String ->
+        it.split(" ")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .map { it.toCharArray().toSet() }
+    }
+    return EncodedLine(parseListOfEncodedDigits(rawInput), parseListOfEncodedDigits(rawOutput))
 }
 
 fun part2(input: List<String>): Int {

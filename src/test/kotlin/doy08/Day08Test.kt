@@ -28,4 +28,33 @@ class Day08Test {
 
         assert (result == 26)
     }
+
+    @Test
+    fun `parseEncodedLine should return a set of inputs and a set of outputs`() {
+        val rawLine = sampleInput[0]
+
+        val result: EncodedLine = parseEncodedLine(rawLine)
+
+        assert(result.inputValues == listOf(
+            "be".toSet(),
+            "cfbegad".toSet(),
+            "cbdgef".toSet(),
+            "fgaecd".toSet(),
+            "cgeb".toSet(),
+            "fdcge".toSet(),
+            "agebfd".toSet(),
+            "fecdb".toSet(),
+            "fabcd".toSet(),
+            "edb".toSet()
+        ))
+
+        assert(result.outputValues == listOf(
+            "fdgacbe".toSet(),
+            "cefdb".toSet(),
+            "cefbgd".toSet(),
+            "gcbe".toSet()
+        ))
+    }
+
+    private fun String.toSet() : Set<Char> = this.toCharArray().toSet()
 }
