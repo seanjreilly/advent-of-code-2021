@@ -159,6 +159,20 @@ class Day09Test {
                     assert(neighbours.contains(point.west()))
                 }
         }
+
+        @Test
+        fun `map should be iterable and iterating should traverse all the points in the map`() {
+            val map = HeightMap(sampleInput)
+            val iterable: Iterable<Point> = map
+
+            val points = iterable.toSet()
+            assert(points.size == 50)
+            for (x in 0 until map.width) {
+                for (y in 0 until map.height) {
+                    assert(Point(x,y) in points)
+                }
+            }
+        }
     }
 }
 

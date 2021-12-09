@@ -16,7 +16,7 @@ fun part2(input: List<String>): Int {
     return input.size
 }
 
-internal class HeightMap(rawData: List<String>) {
+internal class HeightMap(rawData: List<String>) : Iterable<Point> {
     operator fun get(point: Point): Int = data[point.y][point.x]
     fun getNeighbours(it: Point): Collection<Point> {
         return listOf(
@@ -34,6 +34,14 @@ internal class HeightMap(rawData: List<String>) {
     init {
         //ensure the map is rectangular
         assert(data.all { it.size == width }) {"every row must be the same size"}
+    }
+
+    override fun iterator() = iterator {
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                yield(Point(x,y))
+            }
+        }
     }
 }
 
