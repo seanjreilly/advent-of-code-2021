@@ -14,7 +14,12 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    return HeightMap(input)
+        .findBasins()
+        .map { it.members.size }
+        .sortedDescending()
+        .take(3)
+        .reduce { acc,i -> acc * i }
 }
 
 internal class HeightMap(rawData: List<String>) : Iterable<Point> {
@@ -30,7 +35,7 @@ internal class HeightMap(rawData: List<String>) : Iterable<Point> {
 
     val height = rawData.size
     val width = rawData.first().length
-    val data:Array<IntArray> = rawData.map { it.toCharArray().map { it.digitToInt() }.toIntArray() }.toTypedArray()
+    private val data:Array<IntArray> = rawData.map { it.toCharArray().map { it.digitToInt() }.toIntArray() }.toTypedArray()
 
     init {
         //ensure the map is rectangular
@@ -40,6 +45,33 @@ internal class HeightMap(rawData: List<String>) : Iterable<Point> {
     //points are points on the map with a height smaller than every neighbour
     fun findLowPoints(): Set<Point> {
         return this.filter { this[it] < this.getNeighbours(it).minOf { this[it] } }.toSet()
+    }
+
+    fun findBasins(): Collection<Basin> {
+        return findLowPoints().map { Basin(it, findBasinMembers(it)) }
+    }
+
+    private fun findBasinMembers(lowPoint: Point) : Set<Point> {
+        val result = HashSet<Point>()
+
+        //breadth first search, stopping at points with height 9
+        val pointsConsidered = HashSet<Point>()
+        val queue = mutableListOf(lowPoint) //starting point for the breadth first search
+        do {
+            val candidate = queue.removeAt(0)
+            if (candidate in pointsConsidered) {
+                continue //we've already taken a look at this candidate, so skip it
+            }
+            pointsConsidered += candidate
+            if ( this[candidate] == 9) {
+                continue //basins end at points of height 9, so skip this one
+            }
+            result += candidate
+            queue.addAll(getNeighbours(candidate))
+
+        } while (queue.isNotEmpty())
+
+        return result
     }
 
     override fun iterator() = iterator {
@@ -57,3 +89,5 @@ internal data class Point(val x: Int, val y: Int) {
     internal fun east() = Point(x + 1, y)
     internal fun west() = Point(x - 1, y)
 }
+
+internal data class Basin(val lowPoint: Point, val members: Collection<Point>)

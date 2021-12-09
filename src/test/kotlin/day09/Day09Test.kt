@@ -24,6 +24,11 @@ class Day09Test {
         assert(part1(sampleInput) == 15)
     }
 
+    @Test
+    fun `part2 should find the three largest basins and return the product of their sizes`() {
+        assert(part2(sampleInput) == 1134)
+    }
+
     @Nested
     inner class HeightMapTest {
         @Test
@@ -195,6 +200,111 @@ class Day09Test {
             val map = HeightMap(listOf("1"))
             assert(map.getNeighbours(Point(0,0)).isEmpty())
         }
+
+        @Test
+        fun `findBasins should return 4 basins for the sample map`() {
+            val map = HeightMap(sampleInput)
+
+            val result:Collection<Basin> = map.findBasins()
+
+            assert(result.size == 4)
+        }
+
+        @Test
+        fun `findBasins should return 3 members for the basin with low point (1,0)`() {
+            val map = HeightMap(sampleInput)
+
+            val result = map.findBasins()
+
+            val basin = result.filter { (lowPoint, _) -> lowPoint == Point(1, 0) }.single()
+            assert(basin.members.size == 3)
+            assert(Point(1,0) in basin.members)
+            assert(Point(0,0) in basin.members)
+            assert(Point(0,1) in basin.members)
+        }
+
+        @Test
+        fun `findBasins should return 9 members for the basin with low point (9,0)`() {
+            val map = HeightMap(sampleInput)
+
+            val result = map.findBasins()
+
+            val basin = result.filter { (lowPoint, _) -> lowPoint == Point(9, 0) }.single()
+            assert(basin.members.size == 9)
+            assert(Point(5,0) in basin.members)
+            assert(Point(6,0) in basin.members)
+            assert(Point(7,0) in basin.members)
+            assert(Point(8,0) in basin.members)
+            assert(Point(9,0) in basin.members)
+
+            assert(Point(6,1) in basin.members)
+            assert(Point(8,1) in basin.members)
+            assert(Point(9,1) in basin.members)
+
+            assert(Point(9,2) in basin.members)
+        }
+
+        @Test
+        fun `findBasins should return 14 members for the basin with low point (2,2)`() {
+            val map = HeightMap(sampleInput)
+
+            val result = map.findBasins()
+
+            val basin = result.filter { (lowPoint, _) -> lowPoint == Point(2, 2) }.single()
+            assert(basin.members.size == 14)
+            assert(Point(2,1) in basin.members)
+            assert(Point(3,1) in basin.members)
+            assert(Point(4,1) in basin.members)
+
+            assert(Point(1,2) in basin.members)
+            assert(Point(2,2) in basin.members)
+            assert(Point(3,2) in basin.members)
+            assert(Point(4,2) in basin.members)
+            assert(Point(5,2) in basin.members)
+
+            assert(Point(0,3) in basin.members)
+            assert(Point(1,3) in basin.members)
+            assert(Point(2,3) in basin.members)
+            assert(Point(3,3) in basin.members)
+            assert(Point(4,3) in basin.members)
+
+            assert(Point(1,4) in basin.members)
+        }
+
+        @Test
+        fun `findBasins should return 9 members for the basin with low point (6,4)`() {
+            val map = HeightMap(sampleInput)
+
+            val result = map.findBasins()
+
+            val basin = result.filter { (lowPoint, _) -> lowPoint == Point(6, 4) }.single()
+            assert(basin.members.size == 9)
+            assert(Point(7,2) in basin.members)
+
+            assert(Point(6,3) in basin.members)
+            assert(Point(7,3) in basin.members)
+            assert(Point(8,3) in basin.members)
+
+            assert(Point(5,4) in basin.members)
+            assert(Point(6,4) in basin.members)
+            assert(Point(7,4) in basin.members)
+            assert(Point(8,4) in basin.members)
+            assert(Point(9,4) in basin.members)
+        }
+
+        @Test
+        fun `findBasins should not return any basin with a member point that has a height of 9`() {
+            val map = HeightMap(sampleInput)
+
+            val result = map.findBasins()
+
+            result.forEach { basin ->
+                basin.members.forEach { member ->
+                    assert(map[member] != 9)
+                }
+            }
+        }
+        //TODO:basin members should always be transitively reachable from the low point //not sure how easy this is to implement
     }
 }
 
