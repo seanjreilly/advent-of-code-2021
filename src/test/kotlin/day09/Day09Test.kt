@@ -173,6 +173,20 @@ class Day09Test {
                 }
             }
         }
+
+        @Test
+        fun `getNeighbours should return 2 neighbours for every cell in a 2x2 map`() {
+            val map = HeightMap(listOf("11", "11")) //2x2 map
+            map.forEach {
+                assert(map.getNeighbours(it).size == 2)
+            }
+        }
+
+        @Test
+        fun `getNeighbors should return 0 neighbours for the cell in a 1x1 map`() {
+            val map = HeightMap(listOf("1"))
+            assert(map.getNeighbours(Point(0,0)).isEmpty())
+        }
     }
 }
 
