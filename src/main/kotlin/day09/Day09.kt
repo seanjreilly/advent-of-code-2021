@@ -9,7 +9,13 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return input.size
+    //low points are points on the map with a height smaller than every neighbour
+    //the risk level is 1 + the height of the point
+    val heightMap = HeightMap(input)
+    return heightMap
+        .map { Pair(it, heightMap[it]) }
+        .filter { (point, height) -> height < heightMap.getNeighbours(point).minOf { heightMap[it] } }
+        .sumOf { (_, height) -> 1+ height }
 }
 
 fun part2(input: List<String>): Int {

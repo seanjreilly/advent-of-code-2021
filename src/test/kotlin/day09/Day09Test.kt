@@ -16,6 +16,14 @@ class Day09Test {
     //3 by 3 grid
     val smallInput = sampleInput.map { it.substring(0..2) }.take(3)
 
+    @Test
+    fun `part1 should find the risk level of every low point and return the sum of all risk levels`() {
+        //low points are points on the map with a height smaller than every neighbour
+        //the risk level is 1 + the height of the point
+
+        assert(part1(sampleInput) == 15)
+    }
+
     @Nested
     inner class HeightMapTest {
         @Test
