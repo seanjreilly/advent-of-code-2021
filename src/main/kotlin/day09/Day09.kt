@@ -9,13 +9,8 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    //low points are points on the map with a height smaller than every neighbour
     //the risk level is 1 + the height of the point
-    val heightMap = HeightMap(input)
-    return heightMap
-        .map { Pair(it, heightMap[it]) }
-        .filter { (point, height) -> height < heightMap.getNeighbours(point).minOf { heightMap[it] } }
-        .sumOf { (_, height) -> 1+ height }
+    return HeightMap(input).findLowPoints().sumOf { lowPoint -> 1 + HeightMap(input)[lowPoint] }
 }
 
 fun part2(input: List<String>): Int {
@@ -40,6 +35,11 @@ internal class HeightMap(rawData: List<String>) : Iterable<Point> {
     init {
         //ensure the map is rectangular
         assert(data.all { it.size == width }) {"every row must be the same size"}
+    }
+
+    //points are points on the map with a height smaller than every neighbour
+    fun findLowPoints(): Set<Point> {
+        return this.filter { this[it] < this.getNeighbours(it).minOf { this[it] } }.toSet()
     }
 
     override fun iterator() = iterator {
