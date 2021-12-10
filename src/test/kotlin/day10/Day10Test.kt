@@ -109,7 +109,9 @@ class Day10Test {
     fun `calculateCompletionStringScore should work for long completion strings`() {
         val input = "]]])>)})}>}})}>"
 
-        assert(calculateCompletionStringScore(input) > 0L)
+        val result = calculateCompletionStringScore(input)
+        assert(result > 0L)
+        assert(result > Int.MAX_VALUE)
     }
 }
 
