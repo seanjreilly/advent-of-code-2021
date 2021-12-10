@@ -25,8 +25,16 @@ fun part1(input: List<String>): Int {
         .sum()
 }
 
-fun part2(input: List<String>): Int {
-    return input.size
+fun part2(input: List<String>): Long {
+    val completionScores = input
+        .asSequence()
+        .map { parseChunks(it) }
+        .filterIsInstance<ParseResult.Incomplete>()
+        .map { it.completionString }
+        .map { calculateCompletionStringScore(it) }
+        .sortedBy { it }
+        .toList()
+    return completionScores[completionScores.size / 2] //middle element (division rounds down)
 }
 
 internal sealed class ParseResult {
@@ -45,7 +53,7 @@ internal sealed class ParseResult {
      * An incomplete line is a line that has open chunks that aren't closed,
      * but hasn't encountered an unexpected closing character
      */
-    object Incomplete : ParseResult()
+    data class Incomplete(val completionString: String) : ParseResult()
 
     /**
      * Represents a corrupted line
@@ -81,5 +89,20 @@ internal fun parseChunks(line: String): ParseResult {
         return ParseResult.Complete
     }
 
-    return ParseResult.Incomplete
+    //iterate in reverse order because we were pushing to the end of the list
+    val completionString = stack.reversed().map { chunkDelimiters[it]!! }.joinToString("")
+    return ParseResult.Incomplete(completionString)
+}
+
+private val closingDelimiterScores = mapOf(
+    ')' to 1,
+    ']' to 2,
+    '}' to 3,
+    '>' to 4,
+)
+
+internal fun calculateCompletionStringScore(completionString: String): Long {
+    return completionString
+        .toCharArray()
+        .fold(0L) { acc, char -> (acc * 5) + closingDelimiterScores[char]!! }
 }

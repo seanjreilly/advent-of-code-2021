@@ -15,12 +15,18 @@ class Day10Test {
         <{([([[(<>()){}]>(<<{{
         <{([{{}}[<[[[<>{}]]]>[]]
     """.trimIndent().lines()
-    
+
     @Test
-    fun `part1 should parse chunks, find the score for the first illegal character on each line, and return the sum of the scores`() {
+    fun `part1 should parse chunks, find corrupted lines, find the score for the first illegal character on each line, and return the sum of the scores`() {
         assert(part1(input) == 26397)
     }
-    
+
+
+    @Test
+    fun `part2 should parse chunks, find the score for the completion string for each incomplete line, sort the scores and return the middle one`() {
+        assert(part2(input) == 288957L)
+    }
+
     @Test
     fun `parseChunks should return Legal given a complete line`() {
         val completeLines = listOf(
@@ -41,20 +47,23 @@ class Day10Test {
     }
 
     @Test
-    fun `parseChunks should return Incomplete given an incomplete line`() {
+    fun `parseChunks should return Incomplete (and report the missing characters) given an incomplete line`() {
         val incompleteLines = listOf(
-            "(",
-            "[",
-            "{",
-            "<",
-            "((",
-            "({",
-            "({[<",
-            "()("
+            Pair("(", ")"),
+            Pair("[", "]"),
+            Pair("{", "}"),
+            Pair("<", ">"),
+            Pair("((", "))"),
+            Pair("({", "})"),
+            Pair("({[<", ">]})"),
+            Pair("()(", ")")
         )
 
-        incompleteLines.forEach {
-            assert(parseChunks(it) == ParseResult.Incomplete)
+        incompleteLines.forEach { (line, expectedCompletionString) ->
+            val result = parseChunks(line)
+
+            assert(result is ParseResult.Incomplete)
+            assert((result as ParseResult.Incomplete).completionString == expectedCompletionString)
         }
     }
 
@@ -80,4 +89,27 @@ class Day10Test {
             }
         }
     }
+
+    @Test
+    fun `calculateCompletionStringScore should start at zero, multiply by 5 and add the score for each character in a completion string`() {
+        val completionStrings = listOf(
+            Pair("}}]])})]", 288957L),
+            Pair(")}>]})", 5566L),
+            Pair("}}>}>))))", 1480781L),
+            Pair("]]}}]}]}>", 995444L),
+            Pair("])}>", 294L)
+        )
+
+        completionStrings.forEach { (completionString, expectedScore) ->
+            assert(calculateCompletionStringScore(completionString) == expectedScore)
+        }
+    }
+
+    @Test
+    fun `calculateCompletionStringScore should work for long completion strings`() {
+        val input = "]]])>)})}>}})}>"
+
+        assert(calculateCompletionStringScore(input) > 0L)
+    }
 }
+
