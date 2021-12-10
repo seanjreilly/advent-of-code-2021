@@ -3,7 +3,7 @@ package day10
 import org.junit.jupiter.api.Test
 
 class Day10Test {
-    val input = """
+    private val input = """
         [({(<(())[]>[[{[]{<()<>>
         [(()[<>])]({[<{<<[]>>(
         {([(<{}[<>[]}>{[]{[(<()>
