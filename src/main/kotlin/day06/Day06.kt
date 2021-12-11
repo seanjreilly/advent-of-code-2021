@@ -1,6 +1,6 @@
 package day06
 
-import readInput
+import utils.readInput
 
 fun main() {
     val input = readInput("Day06").single()

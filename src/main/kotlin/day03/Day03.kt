@@ -1,6 +1,6 @@
 package day03
 
-import readInput
+import utils.readInput
 import kotlin.math.roundToInt
 
 fun main() {

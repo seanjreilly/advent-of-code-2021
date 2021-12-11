@@ -1,5 +1,5 @@
 package day01
-import readInput
+import utils.readInput
 
 fun main() {
     val input = readInput("Day01")

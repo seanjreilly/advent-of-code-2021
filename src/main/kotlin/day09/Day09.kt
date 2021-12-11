@@ -1,6 +1,6 @@
 package day09
 
-import readInput
+import utils.readInput
 import utils.gridmap.GridMap
 import utils.gridmap.Point
 
