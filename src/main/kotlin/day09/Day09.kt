@@ -24,14 +24,9 @@ fun part2(input: List<String>): Int {
         .reduce { acc,i -> acc * i }
 }
 
-internal class HeightMap(data: Array<Array<Int>>) : GridMap<Int>(data) {
+internal class HeightMap(data: Array<Array<Int>>) : GridMap<Int>(data, Point::getCardinalNeighbours) {
 
     internal constructor(rawData: List<String>) : this(rawData.map { it.toCharArray().map { it.digitToInt() }.toTypedArray() }.toTypedArray())
-
-    fun getNeighbours(point: Point): Collection<Point> {
-        return point.getCardinalNeighbours()
-            .filter { isPointInMap(it) }
-    }
 
     //points are points on the map with a height smaller than every neighbour
     fun findLowPoints(): Set<Point> {

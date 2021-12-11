@@ -33,14 +33,9 @@ internal fun countTotalFlashes(input: List<String>, stepsToRun: Int): Int {
         .sum()
 }
 
-internal class OctopusMap(data: Array<Array<Octopus>>) : GridMap<Octopus>(data) {
+internal class OctopusMap(data: Array<Array<Octopus>>) : GridMap<Octopus>(data, Point::getCardinalAndDiagonalNeighbours) {
 
     constructor(rawData: List<String>) : this(rawData.map { it.toCharArray().map { Octopus(it.digitToInt()) }.toTypedArray() }.toTypedArray())
-
-    fun getNeighbours(point: Point): Collection<Point> {
-        return point.getCardinalAndDiagonalNeighbours()
-            .filter { isPointInMap(it) }
-    }
 
     fun step(): Int {
         fun findNewlyFlashingOctopuses() = this.map { Pair(it, this[it]) }

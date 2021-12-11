@@ -1,6 +1,6 @@
 package utils.gridmap
 
-abstract class GridMap<T>(private val data : Array<Array<T>>) : Iterable<Point> {
+abstract class GridMap<T>(private val data : Array<Array<T>>, private val getNeighboursMethod: (Point) -> Collection<Point>) : Iterable<Point> {
     val height: Int = data.size
     val width: Int = data.first().size
 
@@ -11,8 +11,10 @@ abstract class GridMap<T>(private val data : Array<Array<T>>) : Iterable<Point> 
 
     operator fun get(point: Point): T = data[point.y][point.x]
 
-    internal fun isPointInMap(point: Point) : Boolean {
-        return point.x in (0 until width) && point.y in (0 until height)
+    fun getNeighbours(point: Point): Collection<Point> {
+        return getNeighboursMethod(point)
+            .filter { it.x in (0 until width) }
+            .filter { it.y in (0 until height) }
     }
 
     override fun iterator() = iterator {
