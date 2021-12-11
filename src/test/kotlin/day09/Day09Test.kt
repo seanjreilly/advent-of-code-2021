@@ -2,6 +2,7 @@ package day09
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import utils.gridmap.Point
 
 class Day09Test {
     //5 by 10 grid
