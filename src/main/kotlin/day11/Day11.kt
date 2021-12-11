@@ -15,7 +15,15 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    val map = OctopusMap(input)
+    val octopusCount = map.count()
+    var flashed: Int
+    var step = 0
+    do {
+        flashed = map.step()
+        step++
+    } while (flashed < octopusCount)
+    return step
 }
 
 internal fun countTotalFlashes(input: List<String>, stepsToRun: Int): Int {
@@ -62,9 +70,7 @@ internal class OctopusMap(data: Array<Array<Octopus>>) : GridMap<Octopus>(data) 
         val allOctopusesThatFlashedThisStep = this
             .map { this[it] }
             .filter { it.hasFlashed }
-
         allOctopusesThatFlashedThisStep.forEach { it.reset() }
-
         return allOctopusesThatFlashedThisStep.size
     }
 }

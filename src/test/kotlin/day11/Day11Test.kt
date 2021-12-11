@@ -35,6 +35,11 @@ class Day11Test {
         assert(part1(input) == 1656)
     }
 
+    @Test
+    fun `part2 should return the first step where all octopuses flash`() {
+        assert(part2(input) == 195)
+    }
+
     @Nested
     inner class OctopusMapTest {
         private val smallGridOfZeroes = listOf(
