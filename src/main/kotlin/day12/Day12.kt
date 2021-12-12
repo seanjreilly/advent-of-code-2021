@@ -19,7 +19,7 @@ fun part2(input: List<String>): Int {
 internal fun parseGraph(input: List<String>): Graph {
     return input
         .map { it.split('-') }
-        .flatMap { listOf(listOf(it[0], it[1]), listOf(it[1], it[0])) } //if a links to b, b links to a
+        .flatMap { listOf(it, it.reversed()) } //if a links to b, b links to a
         .groupBy({ it[0] }, { it[1] })
         .mapValues { it.value.toSet()  }
 }
