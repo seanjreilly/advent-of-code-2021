@@ -51,22 +51,13 @@ internal fun Path.canVisitASingleSmallCaveTwice() : Boolean {
     return smallCaveVisitCount.count { it.value > 1 } < 2 && smallCaveVisitCount.count { it.value > 2 } == 0
 }
 
-internal fun findDistinctPaths(graph: Graph, validPathFunction: (Path) -> Boolean): Set<Path> {
-    val completedPaths = mutableSetOf<Path>()
-    val queue = mutableListOf(listOf("start"))
+internal fun findDistinctPaths(graph: Graph, validPathFunction: (Path) -> Boolean, currentPath: Path = listOf("start")) : Set<Path> {
+    val nextPathsToConsider = graph[currentPath.last()]!!
+        .map { currentPath + it }
+        .filter(validPathFunction)
 
-    do {
-        val currentPath = queue.removeAt(0)
-        val nextVerticesToConsider = graph[currentPath.last()]!!
-        val nextPathsToConsider = nextVerticesToConsider
-            .map { currentPath + it }
-            .filter(validPathFunction)
+    //any new path that now visits "end" is complete and doesn't need recursive processing (the rest do)
+    val (completePaths, incompletePaths) = nextPathsToConsider.partition { it.last() == "end" }
 
-        //complete paths end with "end" — add them to the result, and the rest to the queue
-        val (completePaths, incompletePaths) = nextPathsToConsider.partition { it.last() == "end" }
-        completePaths.forEach(completedPaths::add)
-        incompletePaths.forEach(queue::add)
-    } while (queue.isNotEmpty())
-
-    return completedPaths
+    return (completePaths + incompletePaths.flatMap { findDistinctPaths(graph, validPathFunction, it) }).toSet()
 }
