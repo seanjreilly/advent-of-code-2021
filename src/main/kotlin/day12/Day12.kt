@@ -1,7 +1,6 @@
 package day12
 
 import utils.readInput
-import kotlin.math.max
 
 fun main() {
     val input = readInput("Day12")
@@ -39,18 +38,17 @@ internal fun Path.neverVisitsASmallCaveMoreThanOnce() : Boolean {
 }
 
 internal fun Path.canVisitASingleSmallCaveTwice() : Boolean {
-    //only contains "start" once and "end" once
-    if (max(this.count { it == "start" }, this.count { it == "end" }) > 1) {
+    //"start" and "end" can still only be visited once, no matter what
+    if (this.count { it == "start" } > 1 || this.count { it == "end" } > 1) {
         return false
     }
 
-    val smallCavesVisitedMoreThanOnce = this.filter { isSmallCave(it) }
+    val smallCaveVisitCount = this.filter { isSmallCave(it) }
         .groupingBy { it }
         .eachCount()
-        .filter { it.value > 1 }
 
-    //contains only a single cave visited more than once and never visits a cave more than twice
-    return smallCavesVisitedMoreThanOnce.size < 2 && smallCavesVisitedMoreThanOnce.filter { it.value > 2 }.isEmpty()
+    //contains only a single small cave visited more than once and never visits a small cave more than twice
+    return smallCaveVisitCount.count { it.value > 1 } < 2 && smallCaveVisitCount.count { it.value > 2 } == 0
 }
 
 internal fun findDistinctPaths(graph: Graph, validPathFunction: (Path) -> Boolean): Set<Path> {
