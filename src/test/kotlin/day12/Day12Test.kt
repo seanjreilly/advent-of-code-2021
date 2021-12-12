@@ -41,10 +41,10 @@ class Day12Test {
     }
 
     @Test
-    fun `findDistinctPaths should return the distinct paths that start at 'start', end at 'end', and visit each small cave at most once`() {
+    fun `findDistinctPaths should return the distinct paths that start at 'start', end at 'end', and pass a validity function`() {
         val graph : Graph = parseGraph(smallInput)
 
-        val paths: Set<Path> = findDistinctPaths(graph)
+        val paths: Set<Path> = findDistinctPaths(graph, Path::neverVisitsASmallCaveMoreThanOnce)
 
         val expectedResults = """
             start,A,b,A,c,A,end

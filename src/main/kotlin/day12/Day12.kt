@@ -9,7 +9,7 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return findDistinctPaths(parseGraph(input)).size
+    return findDistinctPaths(parseGraph(input), Path::neverVisitsASmallCaveMoreThanOnce).size
 }
 
 fun part2(input: List<String>): Int {
@@ -35,7 +35,7 @@ internal typealias Path = List<String>
 /*
     Valid paths never visit any small cave more than once
  */
-internal fun Path.isValid() : Boolean {
+internal fun Path.neverVisitsASmallCaveMoreThanOnce() : Boolean {
     return this.filter { isSmallCave(it) }
         .groupingBy { it }
         .eachCount()
@@ -43,7 +43,7 @@ internal fun Path.isValid() : Boolean {
         .isEmpty()
 }
 
-internal fun findDistinctPaths(graph: Graph): Set<Path> {
+internal fun findDistinctPaths(graph: Graph, validPathFunction: (Path) -> Boolean): Set<Path> {
     val completedPaths = mutableSetOf<Path>()
     val queue = mutableListOf(listOf("start"))
     do {
@@ -51,7 +51,7 @@ internal fun findDistinctPaths(graph: Graph): Set<Path> {
         val nextVerticesToConsider = graph[currentPath.last()]!!
         val nextPathsToConsider = nextVerticesToConsider
             .map { currentPath + it }
-            .filter { it.isValid() }
+            .filter(validPathFunction)
 
         //add any complete paths to the result
         nextPathsToConsider
