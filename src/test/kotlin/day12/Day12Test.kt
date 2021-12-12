@@ -63,12 +63,12 @@ class Day12Test {
     }
 
     @Test
-    fun `part1 should return the number of distinct paths through the cave system`() {
+    fun `part1 should return the number of distinct paths through the cave system, never visiting any small cave more than once`() {
         assert(part1(smallInput) == 10)
     }
 
     @Test
-    fun `part1 should work with a medium example`() {
+    fun `part1 should work with a medium example, never visiting any small cave more than once`() {
         val input = """
             dc-end
             HN-start
@@ -86,7 +86,7 @@ class Day12Test {
     }
 
     @Test
-    fun `part1 should work with a large example`() {
+    fun `part1 should work with a large example, never visiting any small cave more than once`() {
         val input = """
             fs-end
             he-DX
@@ -110,5 +110,53 @@ class Day12Test {
 
         assert(part1(input) == 226)
     }
-}
 
+    @Test
+    fun `part2 should return the number of distinct paths through the cave system`() {
+        assert(part2(smallInput) == 36)
+    }
+
+    @Test
+    fun `part2 should work with a medium example, visiting a single small cave more than once`() {
+        val input = """
+            dc-end
+            HN-start
+            start-kj
+            dc-start
+            dc-HN
+            LN-dc
+            HN-end
+            kj-sa
+            kj-HN
+            kj-dc
+        """.trimIndent().lines()
+
+        assert(part2(input) == 103)
+    }
+
+    @Test
+    fun `part2 should work with a large example, visiting a single small cave more than once`() {
+        val input = """
+            fs-end
+            he-DX
+            fs-he
+            start-DX
+            pj-DX
+            end-zg
+            zg-sl
+            zg-pj
+            pj-he
+            RW-he
+            fs-DX
+            pj-RW
+            zg-RW
+            start-pj
+            he-WI
+            zg-he
+            pj-fs
+            start-RW
+        """.trimIndent().lines()
+
+        assert(part2(input) == 3509)
+    }
+}
