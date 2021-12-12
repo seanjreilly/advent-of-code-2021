@@ -14,7 +14,7 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return findDistinctPaths(parseGraph(input), Path::canVisitASingleCaveTwice).size
+    return findDistinctPaths(parseGraph(input), Path::canVisitASingleSmallCaveTwice).size
 }
 
 internal fun parseGraph(input: List<String>): Graph {
@@ -26,12 +26,9 @@ internal fun parseGraph(input: List<String>): Graph {
 }
 
 internal typealias Graph = Map<String, Set<String>> //key is source vertex, value is set of vertices connected to source
-
-internal fun isSmallCave(cave: String): Boolean {
-    return cave.first().isLowerCase()
-}
-
 internal typealias Path = List<String>
+
+internal fun isSmallCave(cave: String): Boolean = cave.first().isLowerCase()
 
 internal fun Path.neverVisitsASmallCaveMoreThanOnce() : Boolean {
     return this.filter { isSmallCave(it) }
@@ -41,9 +38,9 @@ internal fun Path.neverVisitsASmallCaveMoreThanOnce() : Boolean {
         .isEmpty()
 }
 
-internal fun Path.canVisitASingleCaveTwice() : Boolean {
+internal fun Path.canVisitASingleSmallCaveTwice() : Boolean {
     //only contains "start" once and "end" once
-    if (max(this.filter { it == "start" }.size, this.filter { it == "end" }.size) > 1) {
+    if (max(this.count { it == "start" }, this.count { it == "end" }) > 1) {
         return false
     }
 
@@ -59,6 +56,7 @@ internal fun Path.canVisitASingleCaveTwice() : Boolean {
 internal fun findDistinctPaths(graph: Graph, validPathFunction: (Path) -> Boolean): Set<Path> {
     val completedPaths = mutableSetOf<Path>()
     val queue = mutableListOf(listOf("start"))
+
     do {
         val currentPath = queue.removeAt(0)
         val nextVerticesToConsider = graph[currentPath.last()]!!
@@ -66,15 +64,10 @@ internal fun findDistinctPaths(graph: Graph, validPathFunction: (Path) -> Boolea
             .map { currentPath + it }
             .filter(validPathFunction)
 
-        //add any complete paths to the result
-        nextPathsToConsider
-            .filter { it.last() == "end" }
-            .forEach(completedPaths::add)
-
-        //add any incomplete paths to the queue
-        nextPathsToConsider
-            .filter { it.last() != "end" }
-            .forEach(queue::add)
+        //complete paths end with "end" — add them to the result, and the rest to the queue
+        val (completePaths, incompletePaths) = nextPathsToConsider.partition { it.last() == "end" }
+        completePaths.forEach(completedPaths::add)
+        incompletePaths.forEach(queue::add)
     } while (queue.isNotEmpty())
 
     return completedPaths
