@@ -91,7 +91,7 @@ class Day13Test {
             assert(newMap.width == map.width) //vertical fold shouldn't change the width
             assert(newMap.height <= foldInstruction.foldValue) //if the last lines are empty the map might be smaller
             expectedSetPoints.forEach { assert(newMap[it]) }
-            assert(newMap.count { newMap[it] } == expectedSetPoints.size)
+            assert(newMap.size == expectedSetPoints.size)
         }
 
         @Test
@@ -126,7 +126,7 @@ class Day13Test {
             assert(newMap.height == map.height) //horizontal fold shouldn't change the height
             assert(newMap.width <= foldInstruction.foldValue) //if the last columns are empty the map might be smaller
             expectedMapPoints.forEach { assert(newMap[it]) }
-            assert(newMap.count { newMap[it] } == expectedMapPoints.size)
+            assert(newMap.size == expectedMapPoints.size)
         }
     }
 

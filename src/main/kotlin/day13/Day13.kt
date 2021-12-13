@@ -12,8 +12,7 @@ fun main() {
 fun part1(input: List<String>): Int {
     val map = SparseBooleanMap.parse(input)
     val foldInstruction = FoldInstruction.parse(input).first()
-    val newMap = map.performFold(foldInstruction)
-    return newMap.count { newMap [it]}
+    return map.performFold(foldInstruction).size
 }
 
 fun part2(input: List<String>): Int {
@@ -45,6 +44,8 @@ internal class SparseBooleanMap(private val setPoints: Set<Point>) : Iterable<Po
     override fun hashCode(): Int {
         return setPoints.hashCode()
     }
+
+    val size = setPoints.size
 
     fun performFold(fold: FoldInstruction): SparseBooleanMap {
         val transform  = { point:Point ->
