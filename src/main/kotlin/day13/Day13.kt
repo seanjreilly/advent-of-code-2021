@@ -105,11 +105,13 @@ internal data class FoldInstruction(val foldAlong: FoldAxis, val foldValue: Int)
         fun parse(input: List<String>) : List<FoldInstruction> {
             return input
                 .dropUntil { it.isBlank() }
+                .asSequence()
                 .drop(1)
                 .map { it.split('=') }
                 .map { Pair( it[0].takeLast(1), it[1].toInt())}
                 .map { Pair(FoldAxis.valueOf(it.first), it.second) }
                 .map { FoldInstruction(it.first, it.second) }
+                .toList()
         }
     }
 }
