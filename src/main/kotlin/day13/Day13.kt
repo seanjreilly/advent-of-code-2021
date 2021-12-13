@@ -74,11 +74,13 @@ internal class SparseBooleanMap(private val setPoints: Set<Point>) : Iterable<Po
     }
 
     fun print(): String {
-        return (0 until height).map { y ->
-            (0 until width).map { x ->
-                if (this[Point(x,y)]) { '#' } else { '.'}
-            }.joinToString("")
-        }.joinToString ("\n")
+        //start with a grid of dots
+        val gridOfDots = (0 until height).joinToString("\n") { ".".repeat(width) }
+        val builder = StringBuilder(gridOfDots)
+
+        //update characters for set map points
+        setPoints.forEach { (x, y) -> builder[(y * (width+1)) + x] = '#' }
+        return builder.toString()
     }
 
     companion object {
