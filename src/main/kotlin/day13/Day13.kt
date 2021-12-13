@@ -15,8 +15,10 @@ fun part1(input: List<String>): Int {
     return map.performFold(foldInstruction).size
 }
 
-fun part2(input: List<String>): Int {
-    return input.size
+fun part2(input: List<String>): String {
+    var map = SparseBooleanMap.parse(input)
+    FoldInstruction.parse(input).forEach { fold -> map = map.performFold(fold) }
+    return map.print()
 }
 
 internal class SparseBooleanMap(private val setPoints: Set<Point>) : Iterable<Point> {
@@ -69,6 +71,14 @@ internal class SparseBooleanMap(private val setPoints: Set<Point>) : Iterable<Po
             .toSet()
 
         return SparseBooleanMap(newSetPoints)
+    }
+
+    fun print(): String {
+        return (0 until height).map { y ->
+            (0 until width).map { x ->
+                if (this[Point(x,y)]) { '#' } else { '.'}
+            }.joinToString("")
+        }.joinToString ("\n")
     }
 
     companion object {

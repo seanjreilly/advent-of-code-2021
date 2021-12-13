@@ -39,6 +39,18 @@ class Day13Test {
         assert(part1(sampleInput) == 17)
     }
 
+    @Test
+    fun `part2 should perform all folds and print the output`() {
+        val expectedOutput = """
+                #####
+                #...#
+                #...#
+                #...#
+                #####
+            """.trimIndent()
+        assert(part2(sampleInput) == expectedOutput)
+    }
+
     @Nested
     inner class SparseBooleanMapTest {
 
@@ -127,6 +139,23 @@ class Day13Test {
             assert(newMap.width <= foldInstruction.foldValue) //if the last columns are empty the map might be smaller
             expectedMapPoints.forEach { assert(newMap[it]) }
             assert(newMap.size == expectedMapPoints.size)
+        }
+
+        @Test
+        fun `print should print out set points as a '#' character and unset points as a dot`() {
+            val expectedOutput = """
+                #####
+                #...#
+                #...#
+                #...#
+                #####
+            """.trimIndent()
+            val inputPoints = expectedOutput.lines().toPointList()
+            val map = SparseBooleanMap(inputPoints.toSet())
+
+            val output:String = map.print()
+
+            assert(output == expectedOutput)
         }
     }
 
