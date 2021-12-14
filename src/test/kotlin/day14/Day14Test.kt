@@ -55,7 +55,7 @@ class Day14Test {
         fun `constructor should return the polymer template from the input`() {
             val polymerTemplate = PolymerTemplate(sampleInput)
 
-            assert(polymerTemplate.polymer.toString() == "NNCB")
+            assert(polymerTemplate.step(emptyMap(), 0) == "NNCB")
         }
 
         @Test

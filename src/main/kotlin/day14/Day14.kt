@@ -30,16 +30,17 @@ internal value class PolymerPair(internal val pair: String) {
 @JvmInline
 internal value class PolymerInsertion(internal val element: Char)
 
-internal data class PolymerTemplate(internal val polymer: StringBuilder) {
-    internal constructor(input: List<String>) : this(StringBuilder(input.first()))
+internal data class PolymerTemplate(private val input: String) {
+    internal constructor(input: List<String>) : this(input.first())
 
     fun step(rules: PairInsertionRules, invocations: Int) : String {
-        (1..invocations).forEach { _ -> stepInternal(rules) }
+        val polymer = StringBuilder(input)
+        (1..invocations).forEach { _ -> stepInternal(rules, polymer) }
         return polymer.toString()
     }
 
-    private fun stepInternal(rules: PairInsertionRules) {
-        val matches = findWhereRulesMatch(rules)
+    private fun stepInternal(rules: PairInsertionRules, polymer: StringBuilder) {
+        val matches = findWhereRulesMatch(rules, polymer)
 
         //find the additional elements to insert
         val insertionsToPerform = matches
@@ -62,7 +63,7 @@ internal data class PolymerTemplate(internal val polymer: StringBuilder) {
         only once even though there are many strings to find. This will be important (O(n) or thereabouts per invocation)
         when the polymer gets longer.
      */
-    private fun findWhereRulesMatch(rules: PairInsertionRules): List<Pair<Int, PolymerPair>> {
+    private fun findWhereRulesMatch(rules: PairInsertionRules, polymer: StringBuilder): List<Pair<Int, PolymerPair>> {
         val pairsToFind = rules.keys.map { it.pair }
         val matches = mutableListOf<Pair<Int, String>>()
 
