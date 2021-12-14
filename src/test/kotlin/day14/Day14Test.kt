@@ -24,13 +24,6 @@ class Day14Test {
         CC -> N
         CN -> C
     """.trimIndent().lines()
-    
-    @Test
-    fun `parsePolymerTemplate should return the polymer template from the input`() {
-        val polymerTemplate : PolymerTemplate = parsePolymerTemplate(sampleInput)
-
-        assert(polymerTemplate.toString() == "NNCB")
-    }
 
     @Test
     fun `parsePairInsertionRules should return a set of pair insertion rules`() {
@@ -59,8 +52,15 @@ class Day14Test {
     inner class PolymerTemplateTest {
 
         @Test
+        fun `constructor should return the polymer template from the input`() {
+            val polymerTemplate = PolymerTemplate(sampleInput)
+
+            assert(polymerTemplate.polymer.toString() == "NNCB")
+        }
+
+        @Test
         fun `step should simultaneously process all pair insertion rules that match sections in the polymer`() {
-            val polymerTemplate = parsePolymerTemplate(sampleInput)
+            val polymerTemplate = PolymerTemplate(sampleInput)
             val pairInsertionRules = parsePairInsertionRules(sampleInput)
 
             val result = polymerTemplate.step(pairInsertionRules, 1)
@@ -70,7 +70,7 @@ class Day14Test {
 
         @Test
         fun `step should not consider new pairs created in a step during that step`() {
-            val polymerTemplate = PolymerTemplate("NN")
+            val polymerTemplate = PolymerTemplate(listOf("NN"))
             val rules = mapOf(
                 PolymerPair("NN") to PolymerInsertion('C'),
                 PolymerPair("CN") to PolymerInsertion('X') //this rule must NOT fire
@@ -83,7 +83,7 @@ class Day14Test {
 
         @Test
         fun `step should apply each rule multiple times in a single invocation where necessary`() {
-            val polymerTemplate = PolymerTemplate("NNN")
+            val polymerTemplate = PolymerTemplate(listOf("NNN"))
             val rules = mapOf(
                 PolymerPair("NN") to PolymerInsertion('C')
             )
@@ -95,7 +95,7 @@ class Day14Test {
 
         @Test
         fun `step should return expected results after 2 invocations`() {
-            val polymerTemplate = parsePolymerTemplate(sampleInput)
+            val polymerTemplate = PolymerTemplate(sampleInput)
             val rules = parsePairInsertionRules(sampleInput)
 
             val result = polymerTemplate.step(rules, 2)
@@ -105,7 +105,7 @@ class Day14Test {
 
         @Test
         fun `step should return expected results after 3 invocations`() {
-            val polymerTemplate = parsePolymerTemplate(sampleInput)
+            val polymerTemplate = PolymerTemplate(sampleInput)
             val rules = parsePairInsertionRules(sampleInput)
 
             val result = polymerTemplate.step(rules, 3)
@@ -115,7 +115,7 @@ class Day14Test {
 
         @Test
         fun `step should return expected results after 4 invocations`() {
-            val polymerTemplate = parsePolymerTemplate(sampleInput)
+            val polymerTemplate = PolymerTemplate(sampleInput)
             val rules = parsePairInsertionRules(sampleInput)
 
             val result = polymerTemplate.step(rules, 4)
@@ -125,7 +125,7 @@ class Day14Test {
 
         @Test
         fun `step should produce a polymer of the expected length after 10 invocations`() {
-            val polymerTemplate = parsePolymerTemplate(sampleInput)
+            val polymerTemplate = PolymerTemplate(sampleInput)
             val rules = parsePairInsertionRules(sampleInput)
 
             val result = polymerTemplate.step(rules, 10)

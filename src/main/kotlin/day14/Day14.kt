@@ -9,7 +9,7 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    val polymerTemplate = parsePolymerTemplate(input)
+    val polymerTemplate = PolymerTemplate(input)
     val rules = parsePairInsertionRules(input)
     val result = polymerTemplate.step(rules, 10)
     val counts = result.groupingBy { it }.eachCount().values
@@ -30,8 +30,8 @@ internal value class PolymerPair(internal val pair: String) {
 @JvmInline
 internal value class PolymerInsertion(internal val element: Char)
 
-internal data class PolymerTemplate(private val polymer: StringBuilder) {
-    internal constructor(polymerTemplate: String) : this(StringBuilder(polymerTemplate))
+internal data class PolymerTemplate(internal val polymer: StringBuilder) {
+    internal constructor(input: List<String>) : this(StringBuilder(input.first()))
 
     fun step(rules: PairInsertionRules, invocations: Int) : String {
         (1..invocations).forEach { _ -> stepInternal(rules) }
@@ -77,10 +77,6 @@ internal data class PolymerTemplate(private val polymer: StringBuilder) {
         }
         return matches.map { Pair(it.first, PolymerPair(it.second)) }
     }
-}
-
-internal fun parsePolymerTemplate(input: List<String>): PolymerTemplate {
-    return PolymerTemplate(input.first())
 }
 
 private  val pairInsertionRuleRegex = """(\w\w) -> (\w)""".toRegex()
