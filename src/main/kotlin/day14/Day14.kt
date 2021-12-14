@@ -11,8 +11,8 @@ fun main() {
 fun part1(input: List<String>): Int {
     val polymerTemplate = parsePolymerTemplate(input)
     val rules = parsePairInsertionRules(input)
-    (1..10).forEach { _ -> polymerTemplate.step(rules) }
-    val counts = polymerTemplate.counts().values
+    val result = polymerTemplate.step(rules, 10)
+    val counts = result.groupingBy { it }.eachCount().values
     return counts.maxOrNull()!! - counts.minOrNull()!!
 }
 
@@ -32,13 +32,23 @@ internal value class PolymerInsertion(internal val element: Char)
 
 internal data class PolymerTemplate(private val polymer: StringBuilder) {
     internal constructor(polymerTemplate: String) : this(StringBuilder(polymerTemplate))
-    override fun toString(): String = polymer.toString()
-    fun step(rules: PairInsertionRules) {
+
+    fun step(rules: PairInsertionRules, invocations: Int) : String {
+        (1..invocations).forEach { _ -> stepInternal(rules) }
+        return polymer.toString()
+    }
+
+    private fun stepInternal(rules: PairInsertionRules) {
         val matches = findWhereRulesMatch(rules)
 
         //find the additional elements to insert
         val insertionsToPerform = matches
-            .map { Pair(it.first, rules[it.second]!!) } //we know the values are in the map because we matched based on the keys
+            .map {
+                Pair(
+                    it.first,
+                    rules[it.second]!!
+                )
+            } //we know the values are in the map because we matched based on the keys
 
         //insert the elements starting from the end of the polymer
         // (this means that we don't need to track updated indices for the matches as we insert elements)
@@ -66,10 +76,6 @@ internal data class PolymerTemplate(private val polymer: StringBuilder) {
             pairFound = polymer.findAnyOf(pairsToFind, startIndex)
         }
         return matches.map { Pair(it.first, PolymerPair(it.second)) }
-    }
-
-    internal fun counts() : Map<Char, Int> {
-        return polymer.groupingBy { it }.eachCount() //do this against the StringBuilder to avoid a needless copy
     }
 }
 

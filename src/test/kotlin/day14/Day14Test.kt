@@ -63,9 +63,9 @@ class Day14Test {
             val polymerTemplate = parsePolymerTemplate(sampleInput)
             val pairInsertionRules = parsePairInsertionRules(sampleInput)
 
-            polymerTemplate.step(pairInsertionRules)
+            val result = polymerTemplate.step(pairInsertionRules, 1)
 
-            assert(polymerTemplate.toString() == "NCNBCHB")
+            assert(result == "NCNBCHB")
         }
 
         @Test
@@ -76,9 +76,9 @@ class Day14Test {
                 PolymerPair("CN") to PolymerInsertion('X') //this rule must NOT fire
             )
 
-            polymerTemplate.step(rules)
+            val result = polymerTemplate.step(rules, 1)
 
-            assert(!polymerTemplate.toString().contains('X'))
+            assert(!result.contains('X'))
         }
 
         @Test
@@ -88,9 +88,9 @@ class Day14Test {
                 PolymerPair("NN") to PolymerInsertion('C')
             )
 
-            polymerTemplate.step(rules)
+            val result = polymerTemplate.step(rules, 1)
 
-            assert(polymerTemplate.toString() == "NCNCN")
+            assert(result == "NCNCN")
         }
 
         @Test
@@ -98,9 +98,9 @@ class Day14Test {
             val polymerTemplate = parsePolymerTemplate(sampleInput)
             val rules = parsePairInsertionRules(sampleInput)
 
-            (1..2).forEach { _ -> polymerTemplate.step(rules) }
+            val result = polymerTemplate.step(rules, 2)
 
-            assert(polymerTemplate.toString() == "NBCCNBBBCBHCB")
+            assert(result == "NBCCNBBBCBHCB")
         }
 
         @Test
@@ -108,9 +108,9 @@ class Day14Test {
             val polymerTemplate = parsePolymerTemplate(sampleInput)
             val rules = parsePairInsertionRules(sampleInput)
 
-            (1..3).forEach { _ -> polymerTemplate.step(rules) }
+            val result = polymerTemplate.step(rules, 3)
 
-            assert(polymerTemplate.toString() == "NBBBCNCCNBBNBNBBCHBHHBCHB")
+            assert(result == "NBBBCNCCNBBNBNBBCHBHHBCHB")
         }
 
         @Test
@@ -118,9 +118,9 @@ class Day14Test {
             val polymerTemplate = parsePolymerTemplate(sampleInput)
             val rules = parsePairInsertionRules(sampleInput)
 
-            (1..4).forEach { _ -> polymerTemplate.step(rules) }
+            val result = polymerTemplate.step(rules, 4)
 
-            assert(polymerTemplate.toString() == "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB")
+            assert(result == "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB")
         }
 
         @Test
@@ -128,9 +128,9 @@ class Day14Test {
             val polymerTemplate = parsePolymerTemplate(sampleInput)
             val rules = parsePairInsertionRules(sampleInput)
 
-            (1..10).forEach { _ -> polymerTemplate.step(rules) }
+            val result = polymerTemplate.step(rules, 10)
 
-            assert(polymerTemplate.toString().length == 3073)
+            assert(result.length == 3073)
         }
     }
 
