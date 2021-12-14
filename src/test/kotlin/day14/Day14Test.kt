@@ -2,6 +2,9 @@ package day14
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Timeout
+import java.util.concurrent.TimeUnit
+
 
 class Day14Test {
     private val sampleInput = """
@@ -134,8 +137,46 @@ class Day14Test {
         }
     }
 
+    @Nested
+    inner class FastPolymerTemplateTest {
+
+        @Test
+        fun `step should return the same results as PolymerTemplate for the first 10 invocations`() {
+            val rules = parsePairInsertionRules(sampleInput)
+            val slowTemplate = PolymerTemplate(sampleInput)
+            val fastTemplate = FastPolymerTemplate(sampleInput)
+
+            (1 until 10).forEach { invocations ->
+
+                val expectedResult = slowTemplate.step(rules, invocations)
+                    .groupingBy { it }
+                    .eachCount()
+                    .mapValues { it.value.toLong() } //fast needs long counts
+
+                val actualResult = fastTemplate.step(rules, invocations)
+
+                assert(actualResult == expectedResult)
+            }
+        }
+
+        @Test
+        @Timeout(1, unit = TimeUnit.SECONDS)
+        fun `step should process 40 invocations quickly`() {
+            val rules = parsePairInsertionRules(sampleInput)
+            val fastTemplate = FastPolymerTemplate(sampleInput)
+            fastTemplate.step(rules, 40)
+        }
+        //should return the same results as PolymerTemplate for the first 10 invocations
+        //should process 40 invocations and still work
+    }
+
     @Test
     fun `part1 should process the polymer for 10 steps, find the elements that occur most and least frequently, and return the difference of their counts`() {
         assert(part1(sampleInput) == 1588)
+    }
+
+    @Test
+    fun `part2 should process the polymer for 40 steps, find the elements that occur most and least frequently, and return the difference of their counts`() {
+        assert(part2(sampleInput) == 2188189693529L)
     }
 }

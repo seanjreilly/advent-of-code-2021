@@ -16,8 +16,11 @@ fun part1(input: List<String>): Int {
     return counts.maxOrNull()!! - counts.minOrNull()!!
 }
 
-fun part2(input: List<String>): Int {
-    return input.size
+fun part2(input: List<String>): Long {
+    val polymerTemplate = FastPolymerTemplate(input)
+    val rules = parsePairInsertionRules(input)
+    val counts = polymerTemplate.step(rules, 40).values
+    return counts.maxOrNull()!! - counts.minOrNull()!!
 }
 
 internal typealias PairInsertionRules = Map<PolymerPair, PolymerInsertion>
@@ -86,4 +89,58 @@ internal fun parsePairInsertionRules(input: List<String>): PairInsertionRules {
         .mapNotNull { pairInsertionRuleRegex.matchEntire(it) }
         .map { it.destructured }
         .associate { (polymerPair, polymerInsertion) -> PolymerPair(polymerPair) to PolymerInsertion(polymerInsertion.first()) }
+}
+
+/*
+    FastPolymerTemplate doesn't produce the actual polymer.
+    It just returns how many times each element is present (which is all we need to solve the problem)
+ */
+internal class FastPolymerTemplate(private val input: String) {
+    constructor(input: List<String>) : this(input.first())
+
+    fun step(rules: PairInsertionRules, invocations: Int): Map<Char, Long> {
+        //find all the 2 char pairs in the input and count how many times each one occurs
+        var state : Map<PolymerPair, Long> = input
+            .windowed(2, 1)
+            .groupingBy { it }
+            .eachCount()
+            .mapKeys { PolymerPair(it.key) }
+            .mapValues { it.value.toLong() }
+
+        //for each invocation
+        (1 .. invocations).forEach { _ ->
+            val newState = mutableMapOf<PolymerPair, Long>()
+            //for each rule that matches
+            rules.keys.intersect(state.keys).forEach { match ->
+                val insertion = rules[match]!!
+                val oldCount = state[match]!!
+
+                //split the old pair into 2 new pairs
+                val firstNewPair = PolymerPair(String(charArrayOf(match.pair.first(), insertion.element)))
+                val secondNewPair = PolymerPair(String(charArrayOf(insertion.element, match.pair.last())))
+
+                //increment (or insert) counts for each
+                newState[firstNewPair] = (newState[firstNewPair] ?: 0L) + oldCount
+                newState[secondNewPair] = (newState[secondNewPair] ?: 0L) + oldCount
+            }
+            state = newState
+        }
+
+        //turn a count of pairs into a count of elements
+        val charCount =  state
+            .flatMap { (it, count) -> listOf(it.pair.first() to count, it.pair.last() to count) }
+            .map { Pair(it.first, it.second) }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (_, values) -> values.sum() }
+            .toMutableMap()
+
+
+        //adjust the character count for the first and last characters in the original input
+        val first = input.first()
+        val last = input.last()
+        charCount[first] = charCount[first]!! + 1L
+        charCount[last] = charCount[last]!! + 1L
+
+        return charCount.mapValues { (_, it) -> it / 2 } //everything is done in pairs, so the output needs to be halved
+    }
 }
