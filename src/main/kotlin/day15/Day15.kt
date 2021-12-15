@@ -13,22 +13,20 @@ fun main() {
 
 fun part1(input: List<String>): CumulativeRisk {
     val map = RiskMap(input)
-    val source = Point(0,0)
-    val destination = Point(map.width, map.height).northWest()
-    return map.findLowestRiskPath(source, destination).last().second
+    return map.findLowestRiskPathToBottomRightCorner().last().second
 }
 
 fun part2(input: List<String>): Int {
     val map = RiskMap(input).makeBiggerMap()
-    val source = Point(0,0)
-    val destination = Point(map.width, map.height).northWest()
-    return map.findLowestRiskPath(source, destination).last().second
+    return map.findLowestRiskPathToBottomRightCorner().last().second
 }
 
 internal class RiskMap(data: Array<Array<Risk>>) : GridMap<Risk>(data, Point::getCardinalNeighbours) {
     constructor(input: List<String>) : this(input.map { it.toCharArray().map(Char::digitToInt).toTypedArray() }.toTypedArray())
 
-    fun findLowestRiskPath(source: Point, destination: Point): Path {
+    fun findLowestRiskPathToBottomRightCorner(): Path {
+        val source = Point(0, 0) //start in the top left corner
+
         //Djikstra's algorithm
         val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
         tentativeDistances[source] = 0
@@ -37,6 +35,7 @@ internal class RiskMap(data: Array<Array<Risk>>) : GridMap<Risk>(data, Point::ge
         tentativeDistances.forEach { (point, distance) ->
             unvisitedPoints.add(Pair(point, distance))
         }
+
         val cheapestNeighbour = mutableMapOf<Point, Point>()
         val visitedPoints = mutableSetOf<Point>()
 
@@ -50,7 +49,7 @@ internal class RiskMap(data: Array<Array<Risk>>) : GridMap<Risk>(data, Point::ge
 
             visitedPoints += currentPoint
 
-            if (currentPoint == destination) {
+            if (currentPoint == bottomRightCorner) {
                 break
             }
 
@@ -69,12 +68,12 @@ internal class RiskMap(data: Array<Array<Risk>>) : GridMap<Risk>(data, Point::ge
 
         //unroll weights to find the cheapest path
         val shortestPath = emptyList<Pair<Point, CumulativeRisk>>().toMutableList()
-        var currentPoint = destination
+        var currentPoint = bottomRightCorner
         do {
             shortestPath.add(Pair(currentPoint, tentativeDistances[currentPoint]!!))
             currentPoint = cheapestNeighbour[currentPoint]!!
-        } while (currentPoint != source)
-        shortestPath.add(Pair(source, 0))
+        } while (currentPoint != Point(0, 0))
+        shortestPath.add(Pair(Point(0, 0), 0))
         return shortestPath.reversed()
     }
 

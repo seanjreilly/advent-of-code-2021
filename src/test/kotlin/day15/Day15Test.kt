@@ -118,12 +118,10 @@ class Day15Test {
         }
 
         @Test
-        fun `findLowestRiskPath should return the path from source to destination with the lowest total risk`() {
+        fun `findLowestRiskPathToBottomRightCorner should return the path to the bottom right corner with the lowest total risk`() {
             val riskMap = RiskMap(sampleInput)
-            val source = Point(0,0)
-            val destination = Point(riskMap.width, riskMap.height).northWest() //-1 to each coordinate to stay on the map
 
-            val path: Path = riskMap.findLowestRiskPath(source, destination)
+            val path: Path = riskMap.findLowestRiskPathToBottomRightCorner()
 
             //ensure correct path is returned
             assert(path.size == 19)
@@ -146,7 +144,7 @@ class Day15Test {
             assert(path[16].first == path[15].first.south())
             assert(path[17].first == path[16].first.east())
             assert(path[18].first == path[17].first.south())
-            assert(path[18].first == destination)
+            assert(path[18].first == riskMap.bottomRightCorner)
 
             //ensure correct cumulative risk is returned each part of the path
             assert(path[0].second == 0)
@@ -159,24 +157,20 @@ class Day15Test {
         }
 
         @Test
-        fun `findLowestRiskPath should work for a fairly big map`() {
+        fun `findLowestRiskPathToBottomRightCorner should work for a fairly big map`() {
             val map = RiskMap(massiveInput)
-            val source = Point(0,0)
-            val destination = Point(map.width, map.height).northWest() //-1 to each coordinate to stay on the map
 
-            val result = map.findLowestRiskPath(source, destination)
+            val result = map.findLowestRiskPathToBottomRightCorner()
 
             assert(result.last().second == 315)
         }
 
         @Test
         @Timeout(1, unit = TimeUnit.SECONDS)
-        fun `findLowestRiskPath should work for a really big map`() {
+        fun `findLowestRiskPathToBottomRightCorner should work for a really big map`() {
             val map = RiskMap(massiveInput).makeBiggerMap()
-            val source = Point(0,0)
-            val destination = Point(map.width, map.height).northWest() //-1 to each coordinate to stay on the map
 
-            map.findLowestRiskPath(source, destination)
+            map.findLowestRiskPathToBottomRightCorner()
         }
     }
 }
