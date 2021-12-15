@@ -1,6 +1,6 @@
 package utils.gridmap
 
-abstract class GridMap<T>(private val data : Array<Array<T>>, private val getNeighboursMethod: (Point) -> Collection<Point>) : Iterable<Point> {
+abstract class GridMap<T>(protected val data : Array<Array<T>>, private val getNeighboursMethod: (Point) -> Collection<Point>) : Iterable<Point> {
     val height: Int = data.size
     val width: Int = data.first().size
 

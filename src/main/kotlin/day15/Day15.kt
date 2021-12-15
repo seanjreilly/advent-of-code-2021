@@ -60,6 +60,24 @@ internal class RiskMap(data: Array<Array<Risk>>) : GridMap<Risk>(data, Point::ge
         shortestPath.add(Pair(source, 0))
         return shortestPath.reversed()
     }
+
+    fun makeBiggerMap(): RiskMap {
+        val newHeight = height * 5
+        val newWidth = width * 5
+
+        val newData = (0 until newHeight) .map { y ->
+            Array(newWidth) { x ->
+                val oldPoint = Point(x % width, y % height)
+                val widthMultiple = x / width
+                val heightMultiple = y / height
+                var value:Int = this[oldPoint] + widthMultiple + heightMultiple
+                while (value > 9) { value -= 9 }
+                value
+            }
+        }.toTypedArray()
+
+        return RiskMap(newData)
+    }
 }
 
 internal typealias CumulativeRisk = Int
