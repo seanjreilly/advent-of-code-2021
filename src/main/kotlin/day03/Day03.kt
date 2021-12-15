@@ -31,21 +31,15 @@ fun part2(input: List<String>): UInt {
     Keep iterating until there is only one value left in the list, and then return that
  */
 private fun filterOnMostCommonValueInEachPosition(input: List<String>, keepMostCommon: Boolean): UInt {
-
-    fun predicate(valueInBitArray:Char, mostCommonValue: Char) : Boolean {
-        if (keepMostCommon) {
-            return valueInBitArray != mostCommonValue
-        }
-        return valueInBitArray != mostCommonValue.not()
-    }
+    val transformation  = if (keepMostCommon) { { it } } else { Char::not }
 
     val potentialRatings: MutableList<BitArray> = input.toMutableList()
     var round = 0
     while (potentialRatings.size > 1) {
         val numberOfSetBitsInEachPosition = countNumberOfSetBitsInEachPosition(potentialRatings)
         val rawBinaryResult = convertBitCountsToRawBinaryResult(numberOfSetBitsInEachPosition, potentialRatings.size)
-        val filterValue = rawBinaryResult[round]
-        potentialRatings.removeAll { predicate(it[round], filterValue) }
+        val filterValue = transformation(rawBinaryResult[round])
+        potentialRatings.removeAll { it[round] != filterValue }
         round++
     }
     return potentialRatings.first().toUInt()
