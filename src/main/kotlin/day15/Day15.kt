@@ -3,6 +3,7 @@ package day15
 import utils.gridmap.GridMap
 import utils.gridmap.Point
 import utils.readInput
+import java.util.*
 
 fun main() {
     val input = readInput("Day15")
@@ -18,7 +19,10 @@ fun part1(input: List<String>): CumulativeRisk {
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    val map = RiskMap(input).makeBiggerMap()
+    val source = Point(0,0)
+    val destination = Point(map.width, map.height).northWest()
+    return map.findLowestRiskPath(source, destination).last().second
 }
 
 internal class RiskMap(data: Array<Array<Risk>>) : GridMap<Risk>(data, Point::getCardinalNeighbours) {
@@ -26,26 +30,39 @@ internal class RiskMap(data: Array<Array<Risk>>) : GridMap<Risk>(data, Point::ge
 
     fun findLowestRiskPath(source: Point, destination: Point): Path {
         //Djikstra's algorithm
-        val unvisitedPoints = this.toMutableSet()
         val tentativeDistances = this.associateWith { Int.MAX_VALUE }.toMutableMap()
         tentativeDistances[source] = 0
+
+        val unvisitedPoints = PriorityQueue<Pair<Point, Int>>(compareBy { it.second })
+        tentativeDistances.forEach { (point, distance) ->
+            unvisitedPoints.add(Pair(point, distance))
+        }
         val cheapestNeighbour = mutableMapOf<Point, Point>()
+        val visitedPoints = mutableSetOf<Point>()
 
         while (unvisitedPoints.isNotEmpty()) {
-            val currentPoint = unvisitedPoints.minByOrNull { tentativeDistances[it]!! }!!
-            unvisitedPoints.remove(currentPoint)
+            val currentPoint = unvisitedPoints.remove().first
+
+            //do an extra filter to remove the duplicate entries from the priority queue (see below)
+            if (currentPoint in visitedPoints) {
+                continue
+            }
+
+            visitedPoints += currentPoint
 
             if (currentPoint == destination) {
                 break
             }
 
             getNeighbours(currentPoint)
-                .filter { it in unvisitedPoints }
+                .filter { it !in visitedPoints }
                 .forEach { point ->
+                    val currentDistanceToPoint = tentativeDistances[point]!!
                     val altDistance = tentativeDistances[currentPoint]!! + this[point]
-                    if (altDistance < tentativeDistances[point]!!) {
+                    if (altDistance < currentDistanceToPoint) {
                         tentativeDistances[point] = altDistance
                         cheapestNeighbour[point] = currentPoint
+                        unvisitedPoints.add(Pair(point, altDistance)) //don't remove the old point (slow), just leave a duplicate entry
                     }
                 }
         }

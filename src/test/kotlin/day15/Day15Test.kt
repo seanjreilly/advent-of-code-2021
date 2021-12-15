@@ -2,8 +2,10 @@ package day15
 
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Timeout
 import utils.gridmap.GridMap
 import utils.gridmap.Point
+import java.util.concurrent.TimeUnit
 
 class Day15Test {
     private val sampleInput = """
@@ -75,6 +77,11 @@ class Day15Test {
     @Test
     fun `part1 should find the least risky path to the bottom right corner and report the total cumulative risk`() {
         assert(part1(sampleInput) == 40)
+    }
+
+    @Test
+    fun `part2 should map a bigger map from the input, and use that map to find the least risky path to the bottom right corner and report the total cumulative risk`() {
+        assert(part2(sampleInput) == part1(massiveInput))
     }
 
     @Nested
@@ -149,6 +156,27 @@ class Day15Test {
 
             //ensure expected overall risk
             assert(path.last().second == 40)
+        }
+
+        @Test
+        fun `findLowestRiskPath should work for a fairly big map`() {
+            val map = RiskMap(massiveInput)
+            val source = Point(0,0)
+            val destination = Point(map.width, map.height).northWest() //-1 to each coordinate to stay on the map
+
+            val result = map.findLowestRiskPath(source, destination)
+
+            assert(result.last().second == 315)
+        }
+
+        @Test
+        @Timeout(1, unit = TimeUnit.SECONDS)
+        fun `findLowestRiskPath should work for a really big map`() {
+            val map = RiskMap(massiveInput).makeBiggerMap()
+            val source = Point(0,0)
+            val destination = Point(map.width, map.height).northWest() //-1 to each coordinate to stay on the map
+
+            map.findLowestRiskPath(source, destination)
         }
     }
 }
