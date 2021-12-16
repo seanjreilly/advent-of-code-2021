@@ -24,4 +24,6 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
+
+    implementation("org.apache.commons:commons-compress:1.21") //used on day 16
 }
