@@ -16,19 +16,21 @@ fun part1(input: String): Int {
     return parseBITSPacket(input).sumVersionNumbers()
 }
 
-fun part2(input: String): Int {
-    return input.length
+fun part2(input: String): Long {
+    return parseBITSPacket(input).value
 }
 
-internal sealed class BITSPacket(val version: Int, val typeId: Int) {
+internal sealed class BITSPacket(val version: Int) {
+    abstract val value: Long
     abstract fun sumVersionNumbers() : Int
 }
-internal class LiteralValuePacket(version: Int, typeId: Int, val literal:Int ) : BITSPacket(version, typeId) {
+internal class LiteralValuePacket(version: Int, override val value:Long ) : BITSPacket(version) {
     override fun sumVersionNumbers() =  version
-
 }
-internal class OperatorPacket(version: Int, typeId: Int, val subPackets: List<BITSPacket>) : BITSPacket(version, typeId) {
+internal class OperatorPacket(version: Int, private val operator: Operator, val subPackets: List<BITSPacket>) : BITSPacket(version) {
     override fun sumVersionNumbers() =  version + subPackets.sumOf { it.sumVersionNumbers() }
+    override val value: Long
+        get() = operator(subPackets.map(BITSPacket::value))
 }
 
 internal fun parseBITSPacket(input: String): BITSPacket {
@@ -48,7 +50,7 @@ internal fun parsePacket(inputStream: BitInputStream) : Pair<BITSPacket, Int> {
     val typeId = inputStream.readBits(3).toInt()
     bitsRead +=3
     if (typeId == 4) { //literal packet
-        //read literal
+        //read literal in chunks
         val literalBinaryValue = StringBuilder()
         var anotherPacketComing: Boolean
         do {
@@ -58,7 +60,7 @@ internal fun parsePacket(inputStream: BitInputStream) : Pair<BITSPacket, Int> {
             bitsRead += 5
         } while (anotherPacketComing)
 
-        return Pair(LiteralValuePacket(version, typeId, literalBinaryValue.toString().toInt(2)), bitsRead)
+        return Pair(LiteralValuePacket(version, literalBinaryValue.toString().toLong(2)), bitsRead)
     }
 
     //operator packet
@@ -66,8 +68,8 @@ internal fun parsePacket(inputStream: BitInputStream) : Pair<BITSPacket, Int> {
     val lengthType = inputStream.readBits(1)
     bitsRead += 1
 
-    if (lengthType == 0L) { //subpackets are restricted by bit length
-
+    if (lengthType == 0L) {
+        //subpackets are restricted by bit length
         val lengthOfSubpackets = inputStream.readBits(15)
         bitsRead += 15
 
@@ -92,5 +94,20 @@ internal fun parsePacket(inputStream: BitInputStream) : Pair<BITSPacket, Int> {
         }
     }
 
-    return Pair(OperatorPacket(version, typeId, subPackets), bitsRead)
+    return Pair(OperatorPacket(version, getPacketOperator(typeId), subPackets), bitsRead)
+}
+
+internal typealias Operator = (List<Long>) -> Long
+
+internal fun getPacketOperator(typeId: Int): Operator {
+    return when (typeId) {
+        0 -> List<Long>::sum
+        1 -> { it -> it.reduce(Long::times) }
+        2 -> { it -> it.minOrNull()!! }
+        3 -> { it -> it.maxOrNull()!! }
+        5 -> { it -> if (it[0] > it [1]) 1  else 0 }
+        6 -> { it -> if (it[0] < it [1]) 1  else 0 }
+        7 -> { it -> if (it[0] == it [1]) 1  else 0 }
+        else -> { throw IllegalArgumentException("valid typeIds are 0-3 or 5-7") }
+    }
 }
