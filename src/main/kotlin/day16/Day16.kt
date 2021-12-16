@@ -27,11 +27,12 @@ internal sealed class BITSPacket(val version: Int) {
 internal class LiteralValuePacket(version: Int, override val value:Long ) : BITSPacket(version) {
     override fun sumVersionNumbers() =  version
 }
-internal class OperatorPacket(version: Int, private val operator: Operator, val subPackets: List<BITSPacket>) : BITSPacket(version) {
+internal class OperatorPacket(version: Int, operator: Operator, val subPackets: List<BITSPacket>) : BITSPacket(version) {
     override fun sumVersionNumbers() =  version + subPackets.sumOf { it.sumVersionNumbers() }
-    override val value: Long
-        get() = operator(subPackets.map(BITSPacket::value))
+    override val value: Long = operator(subPackets.map(BITSPacket::value))
 }
+
+//region binary parsing logic
 
 internal fun parsePacket(input: String): BITSPacket {
     val byteArray : ByteArray = HexFormat.of().parseHex(input)
@@ -47,56 +48,73 @@ internal fun parsePacket(inputStream: BitInputStream) : Pair<BITSPacket, Int> {
     bitsRead += 3
     val typeId = inputStream.readBits(3).toInt()
     bitsRead +=3
-    if (typeId == 4) { //literal packet
-        //read literal in chunks
-        val literalBinaryValue = StringBuilder()
-        var anotherPacketComing: Boolean
-        do {
-            anotherPacketComing = (inputStream.readBits(1) == 1L)
-            val packet = inputStream.readBits(4).toString(2).padStart(4, '0')
-            literalBinaryValue.append(packet)
-            bitsRead += 5
-        } while (anotherPacketComing)
-
-        return Pair(LiteralValuePacket(version, literalBinaryValue.toString().toLong(2)), bitsRead)
+    if (typeId == 4) {
+        //type id 4 represents a literal packet
+        val (literalBinaryValue, bitsReadInLiteralValue) = parseLiteralValue(inputStream)
+        bitsRead += bitsReadInLiteralValue
+        return Pair(LiteralValuePacket(version, literalBinaryValue), bitsRead)
     }
 
-    //operator packet
-    val subPackets = mutableListOf<BITSPacket>()
+    //all other type ids represent an operator packet
+    //length of sub packets is determined in one of two ways
     val lengthType = inputStream.readBits(1)
     bitsRead += 1
+    val operation = if (lengthType == 0L) ::parseSubPacketsByBitLength else ::parseSubPacketsByPacketCount
 
-    if (lengthType == 0L) {
-        //subpackets are restricted by bit length
-        val lengthOfSubpackets = inputStream.readBits(15)
-        bitsRead += 15
-
-        var bitsToGo = lengthOfSubpackets
-        do {
-
-            val (subPacket, subPacketBitsRead) = parsePacket(inputStream)
-            subPackets += subPacket
-            bitsToGo -= subPacketBitsRead
-            bitsRead += subPacketBitsRead
-        } while (bitsToGo > 0)
-    } else {
-        //subpackets are restricted by number of subpackets
-        var subPacketsRemaining = inputStream.readBits(11)
-        bitsRead += 11
-
-        while (subPacketsRemaining > 0) {
-            val (subPacket, subPacketBitsRead) = parsePacket(inputStream)
-            subPackets += subPacket
-            bitsRead += subPacketBitsRead
-            subPacketsRemaining --
-        }
-    }
+    val (subPackets: List<BITSPacket>, bitsReadInSubPackets) = operation(inputStream)
+    bitsRead += bitsReadInSubPackets
 
     return Pair(OperatorPacket(version, getPacketOperator(typeId), subPackets), bitsRead)
 }
 
-internal typealias Operator = (List<Long>) -> Long
+private fun parseSubPacketsByPacketCount(inputStream: BitInputStream): Pair<List<BITSPacket>, Int> {
+    var bitsRead = 0
+    val subPackets = mutableListOf<BITSPacket>()
+    val subPacketsToParse = inputStream.readBits(11)
+    bitsRead += 11
 
+    while (subPackets.size < subPacketsToParse) {
+        val (subPacket, subPacketBitsRead) = parsePacket(inputStream)
+        subPackets += subPacket
+        bitsRead += subPacketBitsRead
+    }
+    return Pair(subPackets, bitsRead)
+}
+
+private fun parseSubPacketsByBitLength(inputStream: BitInputStream): Pair<List<BITSPacket>, Int> {
+    val subPackets = mutableListOf<BITSPacket>()
+    var bitsRead = 0
+    val bitLengthOfSubpackets = inputStream.readBits(15)
+    bitsRead += 15
+
+    var bitsToGo = bitLengthOfSubpackets
+    do {
+        val (subPacket, subPacketBitsRead) = parsePacket(inputStream)
+        subPackets += subPacket
+        bitsToGo -= subPacketBitsRead
+        bitsRead += subPacketBitsRead
+    } while (bitsToGo > 0)
+    return Pair(subPackets, bitsRead)
+}
+
+private fun parseLiteralValue(inputStream: BitInputStream, ): Pair<Long, Int> {
+    var bitsRead = 0
+    //read literal in chunks
+    val literalBinaryValue = StringBuilder()
+    var anotherPacketComing: Boolean
+    do {
+        anotherPacketComing = (inputStream.readBits(1) == 1L)
+        val packet = inputStream.readBits(4).toString(2).padStart(4, '0')
+        literalBinaryValue.append(packet)
+        bitsRead += 5
+    } while (anotherPacketComing)
+
+    return Pair(literalBinaryValue.toString().toLong(2), bitsRead)
+}
+
+//endregion
+
+internal typealias Operator = (List<Long>) -> Long
 internal fun getPacketOperator(typeId: Int): Operator {
     return when (typeId) {
         0 -> List<Long>::sum
