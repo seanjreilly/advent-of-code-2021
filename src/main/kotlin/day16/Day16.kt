@@ -7,22 +7,29 @@ import java.nio.ByteOrder
 import java.util.*
 
 fun main() {
-    val input = readInput("Day15")
+    val input = readInput("Day16")
     println(part1(input.first()))
     println(part2(input.first()))
 }
 
 fun part1(input: String): Int {
-    return input.length
+    return parseBITSPacket(input).sumVersionNumbers()
 }
 
 fun part2(input: String): Int {
     return input.length
 }
 
-internal sealed class BITSPacket(val version: Int, val typeId: Int)
-internal class LiteralValuePacket(version: Int, typeId: Int, val literal:String ) : BITSPacket(version, typeId)
-internal class OperatorPacket(version: Int, typeId: Int, val subPackets: List<BITSPacket>) : BITSPacket(version, typeId)
+internal sealed class BITSPacket(val version: Int, val typeId: Int) {
+    abstract fun sumVersionNumbers() : Int
+}
+internal class LiteralValuePacket(version: Int, typeId: Int, val literal:String ) : BITSPacket(version, typeId) {
+    override fun sumVersionNumbers() =  version
+
+}
+internal class OperatorPacket(version: Int, typeId: Int, val subPackets: List<BITSPacket>) : BITSPacket(version, typeId) {
+    override fun sumVersionNumbers() =  version + subPackets.sumOf { it.sumVersionNumbers() }
+}
 
 internal fun parseBITSPacket(input: String): BITSPacket {
     //convert hex string to a byte array
