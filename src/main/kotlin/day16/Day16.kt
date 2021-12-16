@@ -23,7 +23,7 @@ fun part2(input: String): Int {
 internal sealed class BITSPacket(val version: Int, val typeId: Int) {
     abstract fun sumVersionNumbers() : Int
 }
-internal class LiteralValuePacket(version: Int, typeId: Int, val literal:String ) : BITSPacket(version, typeId) {
+internal class LiteralValuePacket(version: Int, typeId: Int, val literal:Int ) : BITSPacket(version, typeId) {
     override fun sumVersionNumbers() =  version
 
 }
@@ -58,7 +58,7 @@ internal fun parsePacket(inputStream: BitInputStream) : Pair<BITSPacket, Int> {
             bitsRead += 5
         } while (anotherPacketComing)
 
-        return Pair(LiteralValuePacket(version, typeId, literalBinaryValue.toString()), bitsRead)
+        return Pair(LiteralValuePacket(version, typeId, literalBinaryValue.toString().toInt(2)), bitsRead)
     }
 
     //operator packet

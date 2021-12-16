@@ -28,7 +28,7 @@ class Day16Test {
         assert(result is LiteralValuePacket)
         val literalValuePacket = result as LiteralValuePacket
 
-        assert(literalValuePacket.literal == "011111100101")
+        assert(literalValuePacket.literal == 2021)
     }
 
     @Test
@@ -43,10 +43,10 @@ class Day16Test {
         val operatorPacket = result as OperatorPacket
         assert(operatorPacket.subPackets.size == 2)
         assert(operatorPacket.subPackets[0].typeId == 4)
-        assert((operatorPacket.subPackets[0] as LiteralValuePacket).literal == 10.toString(2))
+        assert((operatorPacket.subPackets[0] as LiteralValuePacket).literal == 10)
 
         assert(operatorPacket.subPackets[1].typeId == 4)
-        assert((operatorPacket.subPackets[1] as LiteralValuePacket).literal == 20.toString(2).padStart(8, '0'))
+        assert((operatorPacket.subPackets[1] as LiteralValuePacket).literal == 20)
     }
 
     @Test
@@ -61,18 +61,18 @@ class Day16Test {
         val operatorPacket = result as OperatorPacket
         assert(operatorPacket.subPackets.size == 3)
         assert(operatorPacket.subPackets[0].typeId == 4)
-        assert((operatorPacket.subPackets[0] as LiteralValuePacket).literal == "0001")
+        assert((operatorPacket.subPackets[0] as LiteralValuePacket).literal == 1)
 
         assert(operatorPacket.subPackets[1].typeId == 4)
-        assert((operatorPacket.subPackets[1] as LiteralValuePacket).literal == "0010")
+        assert((operatorPacket.subPackets[1] as LiteralValuePacket).literal == 2)
 
         assert(operatorPacket.subPackets[2].typeId == 4)
-        assert((operatorPacket.subPackets[2] as LiteralValuePacket).literal == "0011")
+        assert((operatorPacket.subPackets[2] as LiteralValuePacket).literal == 3)
     }
 
     @Test
     fun `sumVersionNumbers should return the version number given a literal packet`() {
-        val packet : BITSPacket = LiteralValuePacket(1, 4, "0")
+        val packet : BITSPacket = LiteralValuePacket(1, 4, 0)
 
         val result = packet.sumVersionNumbers()
 
@@ -81,8 +81,8 @@ class Day16Test {
 
     @Test
     fun `sumVersionNumbers should return the version number plus the sum of versions from all subpackets given an operator packet`() {
-        val subPacketA = LiteralValuePacket(16, 4, "0")
-        val subPacketB = OperatorPacket(1, 2, listOf(LiteralValuePacket(3, 4, "1")))
+        val subPacketA = LiteralValuePacket(16, 4, 0)
+        val subPacketB = OperatorPacket(1, 2, listOf(LiteralValuePacket(3, 4, 1)))
         val packet : BITSPacket = OperatorPacket(4, 3, listOf(subPacketA, subPacketB))
 
         val result = packet.sumVersionNumbers()
