@@ -13,11 +13,11 @@ fun main() {
 }
 
 fun part1(input: String): Int {
-    return parseBITSPacket(input).sumVersionNumbers()
+    return parsePacket(input).sumVersionNumbers()
 }
 
 fun part2(input: String): Long {
-    return parseBITSPacket(input).value
+    return parsePacket(input).value
 }
 
 internal sealed class BITSPacket(val version: Int) {
@@ -33,11 +33,9 @@ internal class OperatorPacket(version: Int, private val operator: Operator, val 
         get() = operator(subPackets.map(BITSPacket::value))
 }
 
-internal fun parseBITSPacket(input: String): BITSPacket {
-    //convert hex string to a byte array
+internal fun parsePacket(input: String): BITSPacket {
     val byteArray : ByteArray = HexFormat.of().parseHex(input)
     val inputStream = BitInputStream(ByteArrayInputStream(byteArray), ByteOrder.BIG_ENDIAN)
-
     return parsePacket(inputStream).first
 }
 

@@ -19,8 +19,8 @@ class Day16Test {
     private val operatorPacketWithSubPacketLengthExample = "EE00D40C823060"
 
     @Test
-    fun `parseBITSPacket should return a single literal value packet given appropriate input`() {
-        val result : BITSPacket = parseBITSPacket(literalValuePacketExample)
+    fun `parsePacket should return a single literal value packet given appropriate input`() {
+        val result : BITSPacket = parsePacket(literalValuePacketExample)
 
         //validate header
         assert(result.version == 6)
@@ -31,8 +31,8 @@ class Day16Test {
     }
 
     @Test
-    fun `parseBITSPacket should return an operator packet given a container with a bit length`() {
-        val result: BITSPacket = parseBITSPacket(operatorPacketWithBitLengthExample)
+    fun `parsePacket should return an operator packet given a container with a bit length`() {
+        val result: BITSPacket = parsePacket(operatorPacketWithBitLengthExample)
 
         //validate header
         assert(result.version == 1)
@@ -46,8 +46,8 @@ class Day16Test {
     }
 
     @Test
-    fun `parseBITSPacket should return an operator packet given a container with a subpacket length`() {
-        val result: BITSPacket = parseBITSPacket(operatorPacketWithSubPacketLengthExample)
+    fun `parsePacket should return an operator packet given a container with a subpacket length`() {
+        val result: BITSPacket = parsePacket(operatorPacketWithSubPacketLengthExample)
 
         //validate header
         assert(result.version == 7)
