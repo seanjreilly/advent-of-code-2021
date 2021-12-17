@@ -1,6 +1,7 @@
     package day17
 
 import utils.readInput
+import kotlin.math.abs
 import kotlin.math.sign
 
     fun main() {
@@ -20,15 +21,16 @@ fun part1(input: String): Long {
     }
     minPossibleXVelocity = candidateMinX
 
-    //min possible x should always give the max possible y
-    //brute force y to a reasonable level
-    val result = (0..1000)
-        .map { candidateY -> Pair(minPossibleXVelocity, candidateY) }
-        .filter { willHitTarget(target, it.first, it.second) }
-        .map { Triple(it.first, it.second, findMaximumY(it.second)) }
-        .maxByOrNull { it.third }!!
+    // every possible velocity encountered on the way up is encountered in reverse on the way down,
+    // and therefore the probe will *always* hit y = 0, having moved -initalY to get there.
+    // The next step it will move to a vertical position of -(initialY+1).
+    // A maximum initialY velocity will hit the very bottom of the target envelope.
+    // Therefore, initialY = abs(target.minY) - 1
+    val initialYVelocity = abs(target.targetYPosition.first) - 1
 
-    return result.third
+    //ensure this combination actually hits the target
+    assert(willHitTarget(target, minPossibleXVelocity, initialYVelocity))
+    return findMaximumY(initialYVelocity)
 }
 
 fun part2(input: String): Int {
@@ -41,12 +43,14 @@ fun part2(input: String): Int {
         candidateMinX++
     }
     minPossibleXVelocity = candidateMinX
-    val maxPossibleXVelocity = target.targetXPosition.last() //any higher and the probe is guaranteed to shoot past in one step
+    val maxPossibleXVelocity = target.targetXPosition.last() //any higher, and the probe is guaranteed to shoot past in one step
 
-    val minPossibleYVelocity = target.targetYPosition.first //any lower and the probe is guaranteed to shoot below in one step
+    val minPossibleYVelocity = target.targetYPosition.first //any lower, and the probe is guaranteed to shoot below in one step
+    //we know from part 1 that any velocity over abs(target.minY) - 1 will miss the window on the way down
+    val maxPossibleYVelocity = abs(target.targetYPosition.first) - 1
 
     val potentialInputVelocities = (minPossibleXVelocity..maxPossibleXVelocity)
-        .flatMap { x -> (minPossibleYVelocity..1000).map {y -> Pair(x,y) } }
+        .flatMap { x -> (minPossibleYVelocity..maxPossibleYVelocity).map {y -> Pair(x,y) } }
 
     return potentialInputVelocities.count { willHitTarget(target, it.first, it.second) }
 }
