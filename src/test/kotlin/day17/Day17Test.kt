@@ -151,4 +151,9 @@ class Day17Test {
     fun `part1 should return the maximum y achievable for any starting velocities that hit the target area`() {
         assert(part1(sampleInput) == 45L)
     }
+    
+    @Test
+    fun `part2 should count how many distinct velocities cause the probe to be within the target area`() {
+        assert(part2(sampleInput) == 112)
+    }
 }

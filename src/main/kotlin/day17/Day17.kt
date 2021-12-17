@@ -6,7 +6,7 @@ import kotlin.math.sign
     fun main() {
     val input = readInput("Day17")
     println(part1(input.first()))
-    println(part2(input))
+    println(part2(input.first()))
 }
 
 fun part1(input: String): Long {
@@ -31,8 +31,24 @@ fun part1(input: String): Long {
     return result.third
 }
 
-fun part2(input: List<String>): Int {
-    return input.size
+fun part2(input: String): Int {
+    val target = TargetArea(input)
+
+    //min possible x = min value where findFarthestX is past the edge of the target
+    val minPossibleXVelocity: Int
+    var candidateMinX = 0
+    while (findFarthestX(candidateMinX) < target.targetXPosition.first) {
+        candidateMinX++
+    }
+    minPossibleXVelocity = candidateMinX
+    val maxPossibleXVelocity = target.targetXPosition.last() //any higher and the probe is guaranteed to shoot past in one step
+
+    val minPossibleYVelocity = target.targetYPosition.first //any lower and the probe is guaranteed to shoot below in one step
+
+    val potentialInputVelocities = (minPossibleXVelocity..maxPossibleXVelocity)
+        .flatMap { x -> (minPossibleYVelocity..1000).map {y -> Pair(x,y) } }
+
+    return potentialInputVelocities.count { willHitTarget(target, it.first, it.second) }
 }
 
 internal data class Point(val x: Int, val y: Int)
