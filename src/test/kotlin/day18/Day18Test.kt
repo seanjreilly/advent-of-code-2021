@@ -170,6 +170,13 @@ class Day18Test {
                 assert(pair.left != pair.right) {"extra paranoid check"}
             }
 
+            @Test
+            fun `explode should return false and do nothing given a pair with a depth less than four`() {
+                assert(pairOf(1, 1).explode() == null)
+                assert(pairOf(pairOf(1,1), 1).explode() == null)
+                assert(pairOf(pairOf(pairOf(1,1),1), 1).explode() == null)
+            }
+
             //pair number
                 //constructor *done*
                 //pair number dot split, contains a regular number *done*
@@ -186,13 +193,13 @@ class Day18Test {
                     //right regular number, right pair *done*
                     //two pairs *done*
 
-                //explode pair depth less than four
+                //explode pair depth less than four *done*
                 //explode pair with a depth greater than four
-                //example 1
-                //example 2
-                //example 3
-                //example 4
-                //example 5
+                    //example 1
+                    //example 2
+                    //example 3
+                    //example 4
+                    //example 5
                 //magnitude
 
                 //reduce (don't need to test reduce directly on a regular number — outer ones will always be pairs)

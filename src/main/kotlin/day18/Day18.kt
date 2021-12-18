@@ -57,4 +57,14 @@ internal data class PairNumber(internal var left: SnailfishNumber, internal var 
             else -> false
         }
     }
+
+    fun explode(): ExplosionResult? {
+        return null
+    }
 }
+
+/*
+    vals are null if they have been handled
+    total reference is null if no explosion happened
+ */
+internal data class ExplosionResult(val left: Int?, val right: Int?)
