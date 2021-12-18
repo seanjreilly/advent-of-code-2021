@@ -2,6 +2,7 @@ package day18
 
 import utils.readInput
 import kotlin.math.ceil
+import kotlin.reflect.KMutableProperty0
 
 fun main() {
     val input = readInput("Day18")
@@ -31,31 +32,29 @@ internal data class RegularNumber(private val number: Int) : SnailfishNumber() {
 }
 
 internal data class PairNumber(internal var left: SnailfishNumber, internal var right: SnailfishNumber) : SnailfishNumber() {
+
     fun split(): Boolean {
-        if (left is RegularNumber) {
-            val newLeft = (left as RegularNumber).split()
-            left = newLeft ?: left
-            if (newLeft != null) {
-                return true
+        fun splitOperation(field: KMutableProperty0<SnailfishNumber>) : Boolean {
+            val fieldValue = field.get()
+            if (fieldValue is RegularNumber) {
+                val newValue = fieldValue.split()
+                field.set(newValue ?: fieldValue)
+                if (newValue != null) {
+                    return true
+                }
+            } else {
+                val result = (fieldValue as PairNumber).split()
+                if (result) {
+                    return true
+                }
             }
-        } else {
-            val result = (left as PairNumber).split()
-            if (result) {
-                return true
-            }
+            return false
         }
-        if (right is RegularNumber) {
-            val newRight = (right as RegularNumber).split()
-            right = newRight ?: right
-            if (newRight != null) {
-                return true
-            }
-        } else {
-            val result = (right as PairNumber).split()
-            if (result) {
-                return true
-            }
+
+        return when {
+            splitOperation(::left) -> true
+            splitOperation(::right) -> true
+            else -> false
         }
-        return false
     }
 }
