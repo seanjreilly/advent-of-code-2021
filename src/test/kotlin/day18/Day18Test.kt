@@ -172,11 +172,47 @@ class Day18Test {
 
             @Test
             fun `explode should return false and do nothing given a pair with a depth less than four`() {
-                assert(pairOf(1, 1).explode() == null)
-                assert(pairOf(pairOf(1,1), 1).explode() == null)
-                assert(pairOf(pairOf(pairOf(1,1),1), 1).explode() == null)
+                assert(!pairOf(1, 1).explode())
+                assert(!pairOf(pairOf(1,1), 1).explode())
+                assert(!pairOf(pairOf(pairOf(1,1),1), 1).explode())
             }
 
+            @Test
+            fun `explode should explode a pair nested inside of four pairs, discarding the sum to the left if there is no regular number to the left and return true`() {
+                val pair = pairOf(pairOf(pairOf(pairOf(pairOf(9,8),1),2),3),4) //[[[[[9,8],1],2],3],4]
+                val expectedResult = pairOf(pairOf(pairOf(pairOf(0,9),2),3), 4) //[[[[0,9],2],3],4]
+
+                assert (pair.explode())
+                assert(pair == expectedResult)
+            }
+
+            @Test
+            fun `explode should explode a pair nested inside of four pairs, discarding the sum to the right if there is no regular number to the right and return true`() {
+                val pair = pairOf(7,pairOf(6,pairOf(5, pairOf(4, pairOf(3,2))))) //[7,[6,[5,[4,[3,2]]]]]
+                val expectedResult = pairOf(7,pairOf(6,pairOf(5, pairOf(7,0)))) //[7,[6,[5,[7,0]]]]
+
+                assert (pair.explode())
+                assert(pair == expectedResult)
+            }
+
+            @Test
+            fun `explode should explode a deeply nested pair with neighbours to the left and right, adding its left value to its left neighbour and its right value to its right neighbour and return true`() {
+                val pair = pairOf(pairOf(6, pairOf(5, pairOf(4, pairOf(3,2)))), 1) //[[6,[5,[4,[3,2]]]],1]
+                val expectedResult = pairOf(pairOf(6, pairOf(5, pairOf(7,0))), 3) //[[6,[5,[7,0]]],3]
+
+                assert (pair.explode())
+                assert(pair == expectedResult)
+            }
+
+            @Test
+            fun `explode should only explode the leftmost deeply nested pair it finds and return true`() {
+                val pair = pairOf(pairOf(3, pairOf(2, pairOf(1, pairOf(7,3)))), pairOf(6, pairOf(5, pairOf(4, pairOf(3,2))))) //[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]
+                val expectedResult = pairOf(pairOf(3, pairOf(2, pairOf(8,0))), pairOf(9, pairOf(5, pairOf(4, pairOf(3,2))))) //[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]
+
+                assert (pair.explode())
+                assert(pair == expectedResult)
+            }
+            
             //pair number
                 //constructor *done*
                 //pair number dot split, contains a regular number *done*
@@ -194,12 +230,11 @@ class Day18Test {
                     //two pairs *done*
 
                 //explode pair depth less than four *done*
-                //explode pair with a depth greater than four
-                    //example 1
-                    //example 2
-                    //example 3
-                    //example 4
-                    //example 5
+                //explode pair with a depth greater than four *done*
+                    //example 1 *done*
+                    //example 2 *done*
+                    //example 3 *done*
+                    //example 4 *done*
                 //magnitude
 
                 //reduce (don't need to test reduce directly on a regular number — outer ones will always be pairs)
