@@ -238,6 +238,36 @@ class Day18Test {
         assert(parse("[[[9,[3,8]],[[0,9],6]],[[[3,7],[4,9]],3]]") == pairOf(pairOf(pairOf(9, pairOf(3,8)), pairOf(pairOf(0,9), 6)), pairOf(pairOf(pairOf(3,7), pairOf(4,9)), 3)))
     }
 
+    @Test
+    fun `part1 should parse each line into a snailfish number, sum them in order, and return the magnitude of the final sum`() {
+        val sampleInput = """
+            [1,1]
+            [2,2]
+            [3,3]
+            [4,4]
+            [5,5]
+            [6,6]
+        """.trimIndent().lines()
+
+        assert(part1(sampleInput.slice(0..3)) == parse("[[[[1,1],[2,2]],[3,3]],[4,4]]").magnitude())
+        assert(part1(sampleInput.slice(0..4)) == parse("[[[[3,0],[5,3]],[4,4]],[5,5]]").magnitude())
+        assert(part1(sampleInput) == parse("[[[[5,0],[7,4]],[5,5]],[6,6]]").magnitude())
+
+        val largerInput = """
+            [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
+            [[[5,[2,8]],4],[5,[[9,9],0]]]
+            [6,[[[6,2],[5,6]],[[7,6],[4,7]]]]
+            [[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]
+            [[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]
+            [[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]
+            [[[[5,4],[7,7]],8],[[8,3],8]]
+            [[9,3],[[9,9],[6,[4,9]]]]
+            [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
+            [[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
+        """.trimIndent().lines()
+        assert(part1(largerInput) == 4140)
+    }
+    
     //part 1
 
     internal fun pairOf(left: Int, right:Int) = PairNumber(RegularNumber(left), RegularNumber(right))

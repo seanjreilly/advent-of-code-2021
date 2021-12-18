@@ -12,7 +12,9 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return input.size
+    return input.map { parse(it) }
+        .reduce(PairNumber::plus)
+        .magnitude()
 }
 
 fun part2(input: List<String>): Int {
