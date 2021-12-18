@@ -30,4 +30,32 @@ internal data class RegularNumber(private val number: Int) : SnailfishNumber() {
     fun magnitude() : Int = number
 }
 
-internal data class PairNumber(internal val left: SnailfishNumber, internal val right: SnailfishNumber) : SnailfishNumber() {}
+internal data class PairNumber(internal var left: SnailfishNumber, internal var right: SnailfishNumber) : SnailfishNumber() {
+    fun split(): Boolean {
+        if (left is RegularNumber) {
+            val newLeft = (left as RegularNumber).split()
+            left = newLeft ?: left
+            if (newLeft != null) {
+                return true
+            }
+        } else {
+            val result = (left as PairNumber).split()
+            if (result) {
+                return true
+            }
+        }
+        if (right is RegularNumber) {
+            val newRight = (right as RegularNumber).split()
+            right = newRight ?: right
+            if (newRight != null) {
+                return true
+            }
+        } else {
+            val result = (right as PairNumber).split()
+            if (result) {
+                return true
+            }
+        }
+        return false
+    }
+}
