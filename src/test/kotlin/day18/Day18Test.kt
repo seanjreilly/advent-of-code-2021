@@ -49,19 +49,6 @@ class Day18Test {
                 val expectedNumber = 14
                 assert(RegularNumber(expectedNumber).magnitude() == expectedNumber)
             }
-            
-            //TODO: explode tests? //regular numbers do not explode, but we might need a do nothing impl
-            //TODO: plus operator?
-
-            //regular number *done*
-            //constructor *done*
-            //regular number dot split, no split needed *done*
-            //regular number dot split, split needed *done*
-            // 10 *done*
-            // 11 *done*
-            // 12 *done*
-            //regular numbers do not explode
-            //magnitude *done*
         }
 
         @Nested
@@ -212,35 +199,32 @@ class Day18Test {
                 assert (pair.explode())
                 assert(pair == expectedResult)
             }
-            
-            //pair number
-                //constructor *done*
-                //pair number dot split, contains a regular number *done*
-                    //no split needed *done*
-                    //left is a regular number with a split needed *done*
-                    //right is a regular number with a split needed *done*
-                //split pair containing another pair *done*
-                    //left subpair splits *done*
-                    //right subpair splits *done*
-                    //no subpair splits *done*
-                //split should stop at the first split found *done*
-                    //two regular numbers *done*
-                    //left regular number, right pair *done*
-                    //right regular number, right pair *done*
-                    //two pairs *done*
 
-                //explode pair depth less than four *done*
-                //explode pair with a depth greater than four *done*
-                    //example 1 *done*
-                    //example 2 *done*
-                    //example 3 *done*
-                    //example 4 *done*
-                //magnitude
+            @Test
+            fun `reduce should perform explode and call in a loop until both return false`() {
+                val pair = pairOf(pairOf(pairOf(pairOf(pairOf(4,3), 4), 4), pairOf(7, pairOf(pairOf(8,4), 9))), pairOf(1,1)) //[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]
+                val expectedResult = pairOf(pairOf(pairOf(pairOf(0,7), 4), pairOf(pairOf(7,8), pairOf(6,0))), pairOf(8,1))//[[[[0,7],4],[[7,8],[6,0]]],[8,1]]
 
-                //reduce (don't need to test reduce directly on a regular number — outer ones will always be pairs)
-                    //check for explodes, then check for splits, then loop until stable
+                pair.reduce()
 
-                //add
+                assert(pair == expectedResult)
+            }
+
+            @Test
+            fun `magnitude should return three times the magnitude of its left number plus two times the magnitude of its right number`() {
+                assert(pairOf(9,1).magnitude() == 29)
+                assert(pairOf(1,9).magnitude() == 21)
+                assert(pairOf(pairOf(9,1), pairOf(1,9)).magnitude() == 129)
+            }
+
+            @Test
+            fun `plus should create a new pair containing both numbers and then perform a reduce`() {
+                val first = pairOf(pairOf(pairOf(pairOf(4,3), 4), 4), pairOf(7, pairOf(pairOf(8,4), 9))) //[[[[4,3],4],4],[7,[[8,4],9]]]
+                val second = pairOf(1,1)
+                val expectedResult = pairOf(pairOf(pairOf(pairOf(0,7), 4), pairOf(pairOf(7,8), pairOf(6,0))), pairOf(8,1))//[[[[0,7],4],[[7,8],[6,0]]],[8,1]]
+
+                assert (first + second == expectedResult)
+            }
         }
     }
 

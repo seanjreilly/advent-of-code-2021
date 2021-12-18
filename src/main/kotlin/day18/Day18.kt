@@ -19,7 +19,9 @@ fun part2(input: List<String>): Int {
 }
 
 internal sealed class SnailfishNumber {
-    abstract fun traverse(depth: Int) : List<Pair<SnailfishNumber, Depth>>
+    internal abstract fun traverse(depth: Int) : List<Pair<SnailfishNumber, Depth>>
+    abstract fun magnitude() : Int
+    abstract fun clone(): SnailfishNumber
 }
 internal data class RegularNumber(internal var number: Int) : SnailfishNumber() {
     /*
@@ -30,11 +32,13 @@ internal data class RegularNumber(internal var number: Int) : SnailfishNumber() 
         else -> PairNumber(RegularNumber(number / 2) , RegularNumber(ceil(number / (2.toDouble())).toInt()))
     }
 
-    fun magnitude() : Int = number
+    override fun magnitude() : Int = number
 
     override fun traverse(depth: Int): List<Pair<SnailfishNumber, Depth>> {
         return listOf(Pair(this, depth))
     }
+
+    override fun clone(): SnailfishNumber = copy()
 }
 
 internal data class PairNumber(internal var left: SnailfishNumber, internal var right: SnailfishNumber) : SnailfishNumber() {
@@ -91,7 +95,7 @@ internal data class PairNumber(internal var left: SnailfishNumber, internal var 
                 .firstOrNull()
             toTheRight?.let { it.number += right.number }
 
-            //find parent and replace this node with RegularNumber(0)
+            //find parent and replace the node with RegularNumber(0)
             val replacement = RegularNumber(0)
             val parent = preorderTraversal
                 .slice(0 until i)
@@ -112,6 +116,22 @@ internal data class PairNumber(internal var left: SnailfishNumber, internal var 
     override fun traverse(depth:Int): List<Pair<SnailfishNumber, Depth>> {
         return listOf(Pair(this, depth)) + this.left.traverse(depth + 1) + this.right.traverse(depth + 1)
     }
+
+    override fun magnitude(): Int = (3 * left.magnitude()) + (2 * right.magnitude())
+
+    fun reduce() {
+        while (true) {
+            if (explode()) { continue }
+            if (split()) { continue }
+            break
+        }
+    }
+
+    operator fun plus(second: PairNumber): PairNumber {
+        return PairNumber(this.clone(), second.clone()).apply { reduce() }
+    }
+
+    override fun clone(): SnailfishNumber = PairNumber(left.clone(), right.clone())
 }
 
 typealias Depth = Int
