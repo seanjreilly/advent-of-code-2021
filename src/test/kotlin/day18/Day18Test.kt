@@ -228,9 +228,16 @@ class Day18Test {
         }
     }
 
-    
+    @Test
+    fun `parse should return a PairNumber`() {
+        assert(parse("[1,2]") == pairOf(1,2))
+        assert(parse("[[1,2],3]") == pairOf(pairOf(1,2), 3))
+        assert(parse("[9,[8,7]]") == pairOf(9, pairOf(8,7)))
+        assert(parse("[[1,9],[8,5]]") == pairOf(pairOf(1,9), pairOf(8,5)))
+        assert(parse("[[[[1,2],[3,4]],[[5,6],[7,8]]],9]") == pairOf(pairOf(pairOf(pairOf(1,2), pairOf(3,4)), pairOf(pairOf(5,6), pairOf(7,8))), 9))
+        assert(parse("[[[9,[3,8]],[[0,9],6]],[[[3,7],[4,9]],3]]") == pairOf(pairOf(pairOf(9, pairOf(3,8)), pairOf(pairOf(0,9), 6)), pairOf(pairOf(pairOf(3,7), pairOf(4,9)), 3)))
+    }
 
-    //parse //use a stack based parser like day 10
     //part 1
 
     internal fun pairOf(left: Int, right:Int) = PairNumber(RegularNumber(left), RegularNumber(right))

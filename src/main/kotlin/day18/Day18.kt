@@ -3,6 +3,7 @@ package day18
 import utils.readInput
 import kotlin.math.ceil
 import kotlin.reflect.KMutableProperty0
+import kotlin.text.CharCategory.DECIMAL_DIGIT_NUMBER
 
 fun main() {
     val input = readInput("Day18")
@@ -135,3 +136,22 @@ internal data class PairNumber(internal var left: SnailfishNumber, internal var 
 }
 
 typealias Depth = Int
+
+internal fun parse(line: String): PairNumber {
+    val stack = mutableListOf<SnailfishNumber>()
+    line.replace(",", "").toCharArray().forEach { char ->
+        when (char) {
+            '[', ',' -> return@forEach
+            in DECIMAL_DIGIT_NUMBER -> stack.add(RegularNumber(char.toString().toInt()))
+            ']' -> {
+                val right = stack.removeLast()
+                val left = stack.removeLast()
+                stack.add(PairNumber(left, right))
+            }
+            else -> throw IllegalArgumentException("unexpected character '${char}'")
+        }
+    }
+    assert(stack.size == 1)
+    assert(stack[0] is PairNumber)
+    return stack.first() as PairNumber
+}
