@@ -12,13 +12,21 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return input.map { parse(it) }
+    return input.map(::parse)
         .reduce(PairNumber::plus)
         .magnitude()
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    val numbers = input.map(::parse)
+
+    val permutations = numbers
+        .flatMap { number -> numbers.filter { it != number }.map { Pair(number, it) } }
+        .flatMap { listOf(it, Pair(it.second, it.first)) } //have to add each way as a + b != b + a for SnailfishNumbers
+
+    return permutations
+        .map { (a, b) -> a + b }
+        .maxOf { it.magnitude() }
 }
 
 internal sealed class SnailfishNumber {
