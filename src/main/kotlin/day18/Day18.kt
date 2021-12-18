@@ -2,7 +2,6 @@ package day18
 
 import utils.readInput
 import kotlin.math.ceil
-import kotlin.reflect.KMutableProperty0
 import kotlin.text.CharCategory.DECIMAL_DIGIT_NUMBER
 
 fun main() {
@@ -55,28 +54,29 @@ internal data class RegularNumber(internal var number: Int) : SnailfishNumber() 
 internal data class PairNumber(internal var left: SnailfishNumber, internal var right: SnailfishNumber) : SnailfishNumber() {
 
     fun split(): Boolean {
-        fun splitOperation(field: KMutableProperty0<SnailfishNumber>) : Boolean {
-            val fieldValue = field.get()
-            if (fieldValue is RegularNumber) {
-                val newValue = fieldValue.split()
-                field.set(newValue ?: fieldValue)
-                if (newValue != null) {
-                    return true
-                }
-            } else {
-                val result = (fieldValue as PairNumber).split()
-                if (result) {
-                    return true
-                }
+        val preorderTraversal = traverse(0) //build a list of node + depths
+        for (i in preorderTraversal.indices) {
+            //traverse until we find a RegularNumber
+            val (node, depth) = preorderTraversal[i]
+            if (node !is RegularNumber) {
+                continue
             }
-            return false
-        }
 
-        return when {
-            splitOperation(::left) -> true
-            splitOperation(::right) -> true
-            else -> false
+            //if it splits, replace it and quit
+            node.split()?.let { replacement ->
+                //find parent and which parent field the node it
+                val parent = preorderTraversal
+                    .slice(0 until i)
+                    .last {(it.first is PairNumber) && (it.second == (depth - 1)) }
+                    .first as PairNumber
+                when(node) {
+                    parent.left -> parent.left = replacement
+                    else -> parent.right = replacement
+                }
+                return true
+            }
         }
+        return false
     }
 
     fun explode(): Boolean {
