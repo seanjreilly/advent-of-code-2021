@@ -28,22 +28,22 @@ internal fun parse(input: List<String>): List<Scanner> {
         if (line.isBlank()) { continue }
         if (line.startsWith("---")) {
             //new scanner
-            scanners.add(Scanner(beacons))
+            scanners.add(Scanner(scanners.size, beacons))
             beacons = mutableListOf()
             continue
         }
         val (x, y, z) = line.split(pointRegex).map { it.toInt() }
         beacons += Vector3D(x.toDouble(), y.toDouble(), z.toDouble())
     }
-    scanners.add(Scanner(beacons))
+    scanners.add(Scanner(scanners.size, beacons))
     return scanners
 }
 
-internal data class Scanner(val beacons: List<Vector3D>) {
+internal data class Scanner(val id: Int, val beacons: List<Vector3D>) {
 
 }
 
-fun List<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, List<Vector3D>>? {
+fun Collection<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, List<Vector3D>>? {
     return possible3DRotations
         .asSequence()
         .map { otherBeacons.map(it) }
@@ -56,12 +56,13 @@ fun List<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, List<V
                     .groupingBy { it }
                     .eachCount()
 
-            val bestPotentialOffset = potentialOffsets.maxByOrNull { it.value }!!
+            val bestPotentialOffset = potentialOffsets.entries.find { it.value >= 12 }
 
-            if (bestPotentialOffset.value < 12) {
+            if (bestPotentialOffset == null) {
                 //there are not enough matches with the best potential offset to be an overlap
                 return@mapNotNull null
             }
+
             Pair(bestPotentialOffset.key, rotatedOtherBeacons)
         }
         .map { (potentialOffset, rotatedOtherBeacons) ->
@@ -73,11 +74,31 @@ fun List<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, List<V
 
 typealias RotationTransformation = (Vector3D) -> Vector3D
 
+internal fun List<Scanner>.buildCompleteMap(): Set<Vector3D> {
+    val result: MutableSet<Vector3D> = this.first().beacons.toMutableSet()
+
+    val unmergedBeacons = this.drop(1).toMutableList()
+    while (unmergedBeacons.isNotEmpty()) {
+        val iterator = unmergedBeacons.iterator()
+        while (iterator.hasNext()) {
+            val beaconsToMerge = iterator.next().beacons
+            val operationResult = result.overlaps(beaconsToMerge)
+            if (operationResult != null) {
+                val (_, translatedBeacons) = operationResult
+                result.addAll(translatedBeacons)
+                iterator.remove()
+                break
+            }
+        }
+    }
+
+    return result
+}
+
 // since the rotations are right angle rotations, we can do them with coordinate substitution and negation
 // using the parity rule (number of negations mod 2 = number of substitutions)
 // https://math.stackexchange.com/a/2603691
 val possible3DRotations = listOf<RotationTransformation>(
-//    { Vector3D(it.x, it.y, it.z) }, //+x+y+z //identity
     { it }, //+x+y+z //identity
     { Vector3D(it.x, it.y * -1.0, it.z * -1.0) }, //+x-y-z
     { Vector3D(it.x * -1.0, it.y, it.z * -1.0) }, //-x+y-z

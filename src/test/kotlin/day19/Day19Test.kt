@@ -196,6 +196,51 @@ class Day19Test {
         assert(result == null)
     }
 
+    @Test
+    fun `overlaps should return true given two sets that overlap`() {
+        val scanners = parse(sampleInput)
+
+        val result: Pair<Vector3D, List<Vector3D>>? = scanners[4].beacons.overlaps(scanners[2].beacons)
+
+        assert(result != null)
+    }
+
+    @Test
+    fun `a series of overlaps should work`() {
+        val scanners = parse(sampleInput)
+        val scanner0Beacons = scanners[0].beacons
+
+        assert(scanner0Beacons.overlaps(scanners[2].beacons) == null) //scanner 0 doesn't overlap with scanner 2
+
+        //but it overlaps with scanner 1
+        val zeroOneOverlap = scanner0Beacons.overlaps(scanners[1].beacons)
+        assert(zeroOneOverlap != null)
+        val zeroOneBeacons = scanner0Beacons.toSet() + zeroOneOverlap!!.second
+
+        //which overlaps with scanner 4
+        val zeroOneFourOverlap = zeroOneBeacons.overlaps(scanners[4].beacons)
+        assert(zeroOneFourOverlap != null)
+        val zeroOneFourBeacons = zeroOneBeacons + zeroOneFourOverlap!!.second
+
+        //which does overlap with scanner2
+        val zeroOneFourTwoOverlap = zeroOneFourBeacons.overlaps(scanners[2].beacons)
+        assert(zeroOneFourTwoOverlap != null)
+        val zeroOneTwoFourBeacons = zeroOneFourBeacons + zeroOneFourTwoOverlap!!.second
+
+        val i = 42
+
+
+    }
+
+//    @Test
+//    fun `buildCompleteMap should return a list of 79 beacons given sample input`() {
+//        val scanners = parse(sampleInput)
+//
+//        val result: Set<Vector3D> = scanners.buildCompleteMap()
+//
+//        assert (result.size == 79)
+//    }
+    
     internal fun Vector3D(x: Int, y: Int, z:Int) : Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble())
 }
 
