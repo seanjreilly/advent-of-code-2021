@@ -1,5 +1,6 @@
 package day19
 
+import org.apache.commons.math.geometry.Vector3D
 import org.junit.jupiter.api.Test
 
 class Day19Test {
@@ -153,4 +154,48 @@ class Day19Test {
         assert(result[3].beacons.size == 25)
         assert(result[4].beacons.size == 26)
     }
+
+    @Test
+    fun `overlaps should return a rotation and an offset given a set of beacons that overlaps`() {
+        val scanners = parse(sampleInput)
+
+        val result: Pair<Vector3D, List<Vector3D>>? = scanners[0].beacons.overlaps(scanners[1].beacons)
+
+        assert(result != null)
+        assert(result!!.first == Vector3D(68, -1246, -43))
+        assert(Vector3D(-618, -824, -621) in result.second)
+        assert(Vector3D(-537, -823, -458) in result.second)
+        assert(Vector3D(-447, -329, 318) in result.second)
+        assert(Vector3D(404, -588, -901) in result.second)
+        assert(Vector3D(544, -627, -890) in result.second)
+        assert(Vector3D(528, -643, 409) in result.second)
+        assert(Vector3D(-661, -816, -575) in result.second)
+        assert(Vector3D(390, -675, -793) in result.second)
+        assert(Vector3D(423, -701, 434) in result.second)
+        assert(Vector3D(-345, -311, 381) in result.second)
+        assert(Vector3D(459, -707, 401) in result.second)
+        assert(Vector3D(-485, -357, 347) in result.second)
+    }
+
+    @Test
+    fun `overlaps should return a rotation and an offset given another set of beacons that overlaps`() {
+        val scanners = parse(sampleInput)
+
+        val result: Pair<Vector3D, List<Vector3D>>? = scanners[1].beacons.overlaps(scanners[4].beacons)
+
+        assert(result != null)
+        assert(result!!.first == Vector3D(88, 113, -1104))
+    }
+
+    @Test
+    fun `overlaps should return null given another set of beacons that does not overlap`() {
+        val scanners = parse(sampleInput)
+
+        val result: Pair<Vector3D, List<Vector3D>>? = scanners[0].beacons.overlaps(scanners[4].beacons)
+
+        assert(result == null)
+    }
+
+    internal fun Vector3D(x: Int, y: Int, z:Int) : Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble())
 }
+
