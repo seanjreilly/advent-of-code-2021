@@ -16,7 +16,12 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    val scannerPositions = parse(input).buildCompleteMap().scannerPositions
+    val manhattanDistances = scannerPositions
+        .flatMap { thisPosition -> scannerPositions
+            .map { otherPosition -> thisPosition.manhattanDistance(otherPosition) }
+        }
+    return manhattanDistances.maxOrNull()!!
 }
 
 internal fun parse(input: List<String>): List<Scanner> {

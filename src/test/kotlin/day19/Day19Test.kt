@@ -301,18 +301,23 @@ class Day19Test {
     }
 
     @Test
+    fun `manhattanDistance should give the x difference plus y difference plus z difference given 2 Vector3Ds`() {
+        val point1 = Vector3D(1105,-1205,1230)
+        val point2 = Vector3D(-92,-2380,-21)
+
+        val result = point1.manhattanDistance(point2)
+
+        assert(result == 3623)
+    }
+
+    @Test
     fun `part1 should parse the input into scanners, build the complete map, and return the count of distinct beacons `() {
         assert(part1(sampleInput) == 79)
     }
 
     @Test
-    fun `manhattanDistance should give the x difference plus y difference plus z difference given 2 Vector3Ds`() {
-        val point1 = Vector3D(1105,-1205,1229)
-        val point2 = Vector3D(-92,-2380,-20)
-
-        val result = point1.manhattanDistance(point2)
-
-        assert(result == 3621)
+    fun `part2 should parse the input into scanners, build the complete map, and return the largest manhattan distance between scanner positions`() {
+        assert(part2(sampleInput) == 3621)
     }
 
     @Suppress("TestFunctionName") //fake constructor
