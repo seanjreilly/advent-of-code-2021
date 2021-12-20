@@ -45,13 +45,13 @@ internal data class Image(private val setPoints: Set<Point>, val width:Int, val 
     }
 
     fun enhance(enhancementAlgorithm: BooleanArray): Image {
-        val newSetPoints = (-1 until width).flatMap { x ->
-            (-1 until height).mapNotNull { y ->
+        val newSetPoints = (-1 .. width).flatMap { x ->
+            (-1 .. height).mapNotNull { y ->
                 val point = Point(x, y)
                 val grid = point.threeByThreeSquare()
                 val codeForGrid = grid.map {
                     when {
-                        isOutOfBounds(it) -> false
+                        isOutOfBounds(it) -> backgroundColor
                         else -> (it in setPoints)
                     }
                 }
