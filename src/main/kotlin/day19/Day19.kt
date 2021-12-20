@@ -12,7 +12,7 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return parse(input).buildCompleteMap().size
+    return parse(input).buildCompleteMap().beaconPositions.size
 }
 
 fun part2(input: List<String>): Int {
@@ -80,26 +80,30 @@ fun Collection<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, 
 
 typealias RotationTransformation = (Vector3D) -> Vector3D
 
-internal fun List<Scanner>.buildCompleteMap(): Set<Vector3D> {
-    val result: MutableSet<Vector3D> = this.first().beacons.toMutableSet()
+internal fun List<Scanner>.buildCompleteMap(): CompletedScannerMap {
+    val beaconPositions: MutableSet<Vector3D> = this.first().beacons.toMutableSet()
+    val scannerPositions = mutableSetOf(Vector3D(0.0,0.0,0.0)) //everything is relative to the position of scanner 0
 
     val unmergedBeacons = this.drop(1).toMutableList()
     while (unmergedBeacons.isNotEmpty()) {
         val iterator = unmergedBeacons.iterator()
         while (iterator.hasNext()) {
             val beaconsToMerge = iterator.next().beacons
-            val operationResult = result.overlaps(beaconsToMerge)
+            val operationResult = beaconPositions.overlaps(beaconsToMerge)
             if (operationResult != null) {
-                val (_, translatedBeacons) = operationResult
-                result.addAll(translatedBeacons)
+                val (scannerPosition, translatedBeacons) = operationResult
+                scannerPositions += scannerPosition
+                beaconPositions += translatedBeacons
                 iterator.remove()
                 break
             }
         }
     }
 
-    return result
+    return CompletedScannerMap(scannerPositions, beaconPositions)
 }
+
+data class CompletedScannerMap(val scannerPositions: Set<Vector3D>, val beaconPositions: Set<Vector3D>)
 
 internal fun Vector3D.manhattanDistance(other: Vector3D): Int {
     return (this.x - other.x).toInt().absoluteValue +
