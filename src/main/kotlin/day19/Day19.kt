@@ -55,7 +55,7 @@ fun Collection<Point3D>.overlaps(otherBeacons: List<Point3D>): Pair<Point3D, Lis
             //the number of times each potential offset exists is also be the number of common beacons for that offset
             val potentialOffsets =
                 this
-                    .flatMap { beacon -> rotatedOtherBeacons.map { beacon.subtract(it) }}
+                    .flatMap { beacon -> rotatedOtherBeacons.map { beacon - it }}
                     .groupingBy { it }
                     .eachCount()
 
@@ -65,7 +65,7 @@ fun Collection<Point3D>.overlaps(otherBeacons: List<Point3D>): Pair<Point3D, Lis
             Pair(bestPotentialOffset.key, rotatedOtherBeacons)
         }
         .map { (potentialOffset, rotatedOtherBeacons) ->
-            val rotatedAndOffsetBeacons = rotatedOtherBeacons.map { it.add(potentialOffset) }
+            val rotatedAndOffsetBeacons = rotatedOtherBeacons.map { it + potentialOffset }
             Pair(potentialOffset, rotatedAndOffsetBeacons)
         }
         .firstOrNull()
@@ -105,11 +105,11 @@ data class Point3D(val x: Int, val y:Int, val z:Int) {
             (this.z - other.z).absoluteValue
     }
 
-    fun add(other:Point3D) : Point3D {
+    operator fun plus(other:Point3D) : Point3D {
         return Point3D(this.x + other.x, this.y + other.y, this.z + other.z)
     }
 
-    fun subtract(other: Point3D) : Point3D {
+    operator fun minus(other: Point3D) : Point3D {
         return Point3D(this.x - other.x, this.y - other.y, this.z - other.z)
     }
 }
