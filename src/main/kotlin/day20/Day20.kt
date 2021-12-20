@@ -11,9 +11,7 @@ fun main() {
 
 fun part1(input: List<String>): Int {
     val enhancementAlgorithm = parseEnhancementAlgorithm(input)
-    val image = Image(input)
-    val stage1 = image.enhance(enhancementAlgorithm)
-    val result = stage1.enhance(enhancementAlgorithm)
+    val result = Image(input).enhance(enhancementAlgorithm).enhance(enhancementAlgorithm)
     return result.countLitPixels()
 }
 
