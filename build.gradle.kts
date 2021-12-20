@@ -26,5 +26,4 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params")
 
     implementation("org.apache.commons:commons-compress:1.21") //used on day 16
-    implementation("org.apache.commons:commons-math:2.2") //day 19
 }

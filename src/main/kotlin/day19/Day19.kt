@@ -1,9 +1,7 @@
 package day19
 
-import org.apache.commons.math.geometry.Vector3D
 import utils.readInput
 import kotlin.math.absoluteValue
-import kotlin.math.ceil
 
 fun main() {
     val input = readInput("Day19")
@@ -27,7 +25,7 @@ fun part2(input: List<String>): Int {
 internal fun parse(input: List<String>): List<Scanner> {
     val pointRegex = """,""".toRegex()
     val scanners = mutableListOf<Scanner>()
-    var beacons = mutableListOf<Vector3D>()
+    var beacons = mutableListOf<Point3D>()
 
     for (i in input.indices) {
         if (i == 0) { continue } //skip the first line
@@ -40,15 +38,15 @@ internal fun parse(input: List<String>): List<Scanner> {
             continue
         }
         val (x, y, z) = line.split(pointRegex).map { it.toInt() }
-        beacons += Vector3D(x.toDouble(), y.toDouble(), z.toDouble())
+        beacons += Point3D(x, y, z)
     }
     scanners.add(Scanner(scanners.size, beacons))
     return scanners
 }
 
-internal data class Scanner(val id: Int, val beacons: List<Vector3D>)
+internal data class Scanner(val id: Int, val beacons: List<Point3D>)
 
-fun Collection<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, List<Vector3D>>? {
+fun Collection<Point3D>.overlaps(otherBeacons: List<Point3D>): Pair<Point3D, List<Point3D>>? {
     return possible3DRotations
         .asSequence()
         .map { otherBeacons.map(it) }
@@ -60,12 +58,6 @@ fun Collection<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, 
                     .flatMap { beacon -> rotatedOtherBeacons.map { beacon.subtract(it) }}
                     .groupingBy { it }
                     .eachCount()
-
-            potentialOffsets.keys.forEach {
-                assert(it.x == ceil(it.x))
-                assert(it.y == ceil(it.y))
-                assert(it.z == ceil(it.z))
-            }
 
             val bestPotentialOffset = potentialOffsets.entries.find { it.value >= 12 }
                 ?: return@mapNotNull null //there are not enough matches with the best potential offset to be an overlap
@@ -79,11 +71,11 @@ fun Collection<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, 
         .firstOrNull()
 }
 
-typealias RotationTransformation = (Vector3D) -> Vector3D
+typealias RotationTransformation = (Point3D) -> Point3D
 
 internal fun List<Scanner>.buildCompleteMap(): CompletedScannerMap {
-    val beaconPositions: MutableSet<Vector3D> = this.first().beacons.toMutableSet()
-    val scannerPositions = mutableSetOf(Vector3D(0.0,0.0,0.0)) //everything is relative to the position of scanner 0
+    val beaconPositions: MutableSet<Point3D> = this.first().beacons.toMutableSet()
+    val scannerPositions = mutableSetOf(Point3D(0,0,0)) //everything is relative to the position of scanner 0
 
     val unmergedBeacons = this.drop(1).toMutableList()
     while (unmergedBeacons.isNotEmpty()) {
@@ -104,12 +96,22 @@ internal fun List<Scanner>.buildCompleteMap(): CompletedScannerMap {
     return CompletedScannerMap(scannerPositions, beaconPositions)
 }
 
-data class CompletedScannerMap(val scannerPositions: Set<Vector3D>, val beaconPositions: Set<Vector3D>)
+data class CompletedScannerMap(val scannerPositions: Set<Point3D>, val beaconPositions: Set<Point3D>)
 
-internal fun Vector3D.manhattanDistance(other: Vector3D): Int {
-    return (this.x - other.x).toInt().absoluteValue +
-        (this.y - other.y).toInt().absoluteValue +
-        (this.z - other.z).toInt().absoluteValue
+data class Point3D(val x: Int, val y:Int, val z:Int) {
+    fun manhattanDistance(other: Point3D): Int {
+        return (this.x - other.x).absoluteValue +
+            (this.y - other.y).absoluteValue +
+            (this.z - other.z).absoluteValue
+    }
+
+    fun add(other:Point3D) : Point3D {
+        return Point3D(this.x + other.x, this.y + other.y, this.z + other.z)
+    }
+
+    fun subtract(other: Point3D) : Point3D {
+        return Point3D(this.x - other.x, this.y - other.y, this.z - other.z)
+    }
 }
 
 // since the rotations are right angle rotations, we can do them with coordinate substitution and negation
@@ -117,32 +119,32 @@ internal fun Vector3D.manhattanDistance(other: Vector3D): Int {
 // https://math.stackexchange.com/a/2603691
 val possible3DRotations = listOf<RotationTransformation>(
     { it }, //+x+y+z //identity
-    { Vector3D(it.x, it.y * -1.0, it.z * -1.0) }, //+x-y-z
-    { Vector3D(it.x * -1.0, it.y, it.z * -1.0) }, //-x+y-z
-    { Vector3D(it.x * -1.0, it.y * -1.0, it.z) }, //-x-y+z
+    { Point3D(it.x, it.y * -1, it.z * -1) }, //+x-y-z
+    { Point3D(it.x * -1, it.y, it.z * -1) }, //-x+y-z
+    { Point3D(it.x * -1, it.y * -1, it.z) }, //-x-y+z
 
-    { Vector3D(it.x, it.z, it.y * -1.0) }, //+x+z-y
-    { Vector3D(it.x, it.z * -1.0, it.y) }, //+x-z+y
-    { Vector3D(it.x * -1.0, it.z, it.y) }, //-x+z+y
-    { Vector3D(it.x * -1.0, it.z * -1.0, it.y * -1.0) }, //-x-z-y
+    { Point3D(it.x, it.z, it.y * -1) }, //+x+z-y
+    { Point3D(it.x, it.z * -1, it.y) }, //+x-z+y
+    { Point3D(it.x * -1, it.z, it.y) }, //-x+z+y
+    { Point3D(it.x * -1, it.z * -1, it.y * -1) }, //-x-z-y
 
-    { Vector3D(it.y, it.x, it.z * -1.0) }, //+y+x-z
-    { Vector3D(it.y, it.x * -1.0, it.z) }, //+y-x+z
-    { Vector3D(it.y * -1.0, it.x, it.z) }, //-y+x+z
-    { Vector3D(it.y * -1.0, it.x * -1.0, it.z * -1.0) }, //-y-x-z
+    { Point3D(it.y, it.x, it.z * -1) }, //+y+x-z
+    { Point3D(it.y, it.x * -1, it.z) }, //+y-x+z
+    { Point3D(it.y * -1, it.x, it.z) }, //-y+x+z
+    { Point3D(it.y * -1, it.x * -1, it.z * -1) }, //-y-x-z
 
-    { Vector3D(it.y, it.z, it.x) }, //+y+z+x
-    { Vector3D(it.y, it.z * -1.0, it.x * -1.0) }, //+y-z-x
-    { Vector3D(it.y * -1.0, it.z, it.x * -1.0) }, //-y+z-x
-    { Vector3D(it.y * -1.0, it.z * -1.0, it.x) }, //-y-z+x
+    { Point3D(it.y, it.z, it.x) }, //+y+z+x
+    { Point3D(it.y, it.z * -1, it.x * -1) }, //+y-z-x
+    { Point3D(it.y * -1, it.z, it.x * -1) }, //-y+z-x
+    { Point3D(it.y * -1, it.z * -1, it.x) }, //-y-z+x
 
-    { Vector3D(it.z, it.x, it.y) }, //+z+x+y
-    { Vector3D(it.z, it.x * -1.0, it.y * -1.0) }, //+z-x-y
-    { Vector3D(it.z * -1.0, it.x, it.y * -1.0) }, //-z+x-y
-    { Vector3D(it.z * -1.0, it.x * -1.0, it.y) }, //-z-x+y
+    { Point3D(it.z, it.x, it.y) }, //+z+x+y
+    { Point3D(it.z, it.x * -1, it.y * -1) }, //+z-x-y
+    { Point3D(it.z * -1, it.x, it.y * -1) }, //-z+x-y
+    { Point3D(it.z * -1, it.x * -1, it.y) }, //-z-x+y
 
-    { Vector3D(it.z, it.y, it.x * -1.0) }, //+z+y-x
-    { Vector3D(it.z, it.y * -1.0, it.x) }, //+z-y+x
-    { Vector3D(it.z * -1.0, it.y, it.x) }, //-z+y+x
-    { Vector3D(it.z * -1.0, it.y * -1.0, it.x * -1.0) }, //-z-y-x
+    { Point3D(it.z, it.y, it.x * -1) }, //+z+y-x
+    { Point3D(it.z, it.y * -1, it.x) }, //+z-y+x
+    { Point3D(it.z * -1, it.y, it.x) }, //-z+y+x
+    { Point3D(it.z * -1, it.y * -1, it.x * -1) }, //-z-y-x
 )
