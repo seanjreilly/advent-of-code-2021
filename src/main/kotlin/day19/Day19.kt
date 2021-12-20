@@ -2,6 +2,7 @@ package day19
 
 import org.apache.commons.math.geometry.Vector3D
 import utils.readInput
+import kotlin.math.absoluteValue
 import kotlin.math.ceil
 
 fun main() {
@@ -40,9 +41,7 @@ internal fun parse(input: List<String>): List<Scanner> {
     return scanners
 }
 
-internal data class Scanner(val id: Int, val beacons: List<Vector3D>) {
-
-}
+internal data class Scanner(val id: Int, val beacons: List<Vector3D>)
 
 fun Collection<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, List<Vector3D>>? {
     return possible3DRotations
@@ -100,6 +99,12 @@ internal fun List<Scanner>.buildCompleteMap(): Set<Vector3D> {
     }
 
     return result
+}
+
+internal fun Vector3D.manhattanDistance(other: Vector3D): Int {
+    return (this.x - other.x).toInt().absoluteValue +
+        (this.y - other.y).toInt().absoluteValue +
+        (this.z - other.z).toInt().absoluteValue
 }
 
 // since the rotations are right angle rotations, we can do them with coordinate substitution and negation

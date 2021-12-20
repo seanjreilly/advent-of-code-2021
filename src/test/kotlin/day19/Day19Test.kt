@@ -298,6 +298,16 @@ class Day19Test {
         assert(part1(sampleInput) == 79)
     }
 
+    @Test
+    fun `manhattanDistance should give the x difference plus y difference plus z difference given 2 Vector3Ds`() {
+        val point1 = Vector3D(1105,-1205,1229)
+        val point2 = Vector3D(-92,-2380,-20)
+
+        val result = point1.manhattanDistance(point2)
+
+        assert(result == 3621)
+    }
+
     @Suppress("TestFunctionName") //fake constructor
     private fun Vector3D(x: Int, y: Int, z:Int) : Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble())
 }
