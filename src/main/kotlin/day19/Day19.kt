@@ -2,6 +2,7 @@ package day19
 
 import org.apache.commons.math.geometry.Vector3D
 import utils.readInput
+import kotlin.math.ceil
 
 fun main() {
     val input = readInput("Day19")
@@ -56,6 +57,12 @@ fun Collection<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, 
                     .groupingBy { it }
                     .eachCount()
 
+            potentialOffsets.keys.forEach {
+                assert(it.x == ceil(it.x))
+                assert(it.y == ceil(it.y))
+                assert(it.z == ceil(it.z))
+            }
+
             val bestPotentialOffset = potentialOffsets.entries.find { it.value >= 12 }
 
             if (bestPotentialOffset == null) {
@@ -104,10 +111,10 @@ val possible3DRotations = listOf<RotationTransformation>(
     { Vector3D(it.x * -1.0, it.y, it.z * -1.0) }, //-x+y-z
     { Vector3D(it.x * -1.0, it.y * -1.0, it.z) }, //-x-y+z
 
-    { Vector3D(it.x, it.z, it.y) }, //+x+z+y
-    { Vector3D(it.x, it.z * -1.0, it.y * -1.0) }, //+x-z-y
-    { Vector3D(it.x * -1.0, it.z, it.y * -1.0) }, //-x+z-y
-    { Vector3D(it.x * -1.0, it.z * -1.0, it.y) }, //-x-z+y
+    { Vector3D(it.x, it.z, it.y * -1.0) }, //+x+z-y
+    { Vector3D(it.x, it.z * -1.0, it.y) }, //+x-z+y
+    { Vector3D(it.x * -1.0, it.z, it.y) }, //-x+z+y
+    { Vector3D(it.x * -1.0, it.z * -1.0, it.y * -1.0) }, //-x-z-y
 
     { Vector3D(it.y, it.x, it.z * -1.0) }, //+y+x-z
     { Vector3D(it.y, it.x * -1.0, it.z) }, //+y-x+z
