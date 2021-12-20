@@ -292,7 +292,12 @@ class Day19Test {
         assert(Vector3D(1889, -1729, 1762) in result)
         assert(Vector3D(1994, -1805, 1792) in result)
     }
-    
+
+    @Test
+    fun `part1 should parse the input into scanners, build the complete map, and return the count of distinct beacons `() {
+        assert(part1(sampleInput) == 79)
+    }
+
     @Suppress("TestFunctionName") //fake constructor
     private fun Vector3D(x: Int, y: Int, z:Int) : Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble())
 }
