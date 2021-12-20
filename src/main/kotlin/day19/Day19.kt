@@ -48,9 +48,9 @@ internal data class Scanner(val id: Int, val beacons: List<Point3D>)
 
 fun Collection<Point3D>.overlaps(otherBeacons: List<Point3D>): Pair<Point3D, List<Point3D>>? {
     return possible3DRotations
-        .asSequence()
+        .parallelStream()
         .map { otherBeacons.map(it) }
-        .mapNotNull { rotatedOtherBeacons ->
+        .map { rotatedOtherBeacons ->
             //the potential offsets is every point in beacons minus every point in rotated other beacons
             //the number of times each potential offset exists is also be the number of common beacons for that offset
             val potentialOffsets =
@@ -59,16 +59,17 @@ fun Collection<Point3D>.overlaps(otherBeacons: List<Point3D>): Pair<Point3D, Lis
                     .groupingBy { it }
                     .eachCount()
 
-            val bestPotentialOffset = potentialOffsets.entries.find { it.value >= 12 }
-                ?: return@mapNotNull null //there are not enough matches with the best potential offset to be an overlap
-
-            Pair(bestPotentialOffset.key, rotatedOtherBeacons)
+            //make sure there are enough matches with the best potential offset to be an overlap
+            val bestPotentialOffset = potentialOffsets.entries.parallelStream().filter { it.value >= 12 }.findFirst()
+            bestPotentialOffset.map { Pair(it.key, rotatedOtherBeacons) }
         }
+        .filter { it.isPresent }
+        .map { it.get() }
         .map { (potentialOffset, rotatedOtherBeacons) ->
             val rotatedAndOffsetBeacons = rotatedOtherBeacons.map { it + potentialOffset }
             Pair(potentialOffset, rotatedAndOffsetBeacons)
         }
-        .firstOrNull()
+        .findFirst().orElse(null)
 }
 
 typealias RotationTransformation = (Point3D) -> Point3D
