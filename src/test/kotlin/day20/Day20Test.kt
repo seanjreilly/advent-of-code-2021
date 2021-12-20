@@ -188,4 +188,9 @@ class Day20Test {
     fun `part1 should parse an image and enhancement algorithm, enhance the image twice, and return the number of set pixels in the twice-enhanced image`() {
         assert(part1(sampleInput) == 35)
     }
+
+    @Test
+    fun `part2 should an image and enhancement algorithm, enhance the image 50 times, and return the number of set pixels in the final image`() {
+        assert(part2(sampleInput) == 3351)
+    }
 }

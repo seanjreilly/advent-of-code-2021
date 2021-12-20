@@ -16,7 +16,10 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return input.size
+    val enhancementAlgorithm = parseEnhancementAlgorithm(input)
+    var image = Image(input)
+    (1..50).forEach { image = image.enhance(enhancementAlgorithm) }
+    return image.countLitPixels()
 }
 
 internal fun parseEnhancementAlgorithm(input: List<String>): BooleanArray {
