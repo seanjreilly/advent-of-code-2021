@@ -68,11 +68,7 @@ fun Collection<Vector3D>.overlaps(otherBeacons: List<Vector3D>): Pair<Vector3D, 
             }
 
             val bestPotentialOffset = potentialOffsets.entries.find { it.value >= 12 }
-
-            if (bestPotentialOffset == null) {
-                //there are not enough matches with the best potential offset to be an overlap
-                return@mapNotNull null
-            }
+                ?: return@mapNotNull null //there are not enough matches with the best potential offset to be an overlap
 
             Pair(bestPotentialOffset.key, rotatedOtherBeacons)
         }
