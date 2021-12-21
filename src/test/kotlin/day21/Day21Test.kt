@@ -136,4 +136,9 @@ class Day21Test {
             assert(result.player0.position == expectedPosition )
         }
     }
+
+    @Test
+    fun `part2 should parse input, play with Dirac dice and multiple universes and return the number of universes in which the player that played most won`() {
+        assert(part2(sampleInput) == 444356092776315L)
+    }
 }
