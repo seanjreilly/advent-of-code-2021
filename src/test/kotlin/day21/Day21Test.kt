@@ -63,13 +63,13 @@ class Day21Test {
         val players: LinkedList<Player> = parse(sampleInput)
 
         assert(players.size == 2)
-        assert(players[0].position == 3) //use zero-based positions instead of one-based
-        assert(players[0].score == 0)
-        assert(players[0].id == 1)
+        assert(players[0].position == 3.toByte()) //use zero-based positions instead of one-based
+        assert(players[0].score == 0.toShort())
+        assert(players[0].id == 1.toByte())
 
-        assert(players[1].position == 7) //use zero-based positions instead of one-based
-        assert(players[1].score == 0)
-        assert(players[1].id == 2)
+        assert(players[1].position == 7.toByte()) //use zero-based positions instead of one-based
+        assert(players[1].score == 0.toShort())
+        assert(players[1].id == 2.toByte())
     }
 
     @Test
