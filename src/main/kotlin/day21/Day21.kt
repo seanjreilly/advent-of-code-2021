@@ -70,3 +70,27 @@ internal data class Player(val id: Byte, val position: Byte, val score: Short) {
         return Player(id, newPosition.toByte(), newScore.toShort())
     }
 }
+
+internal data class Universe(val player0: Player, val player1: Player, private val player0IsNext:Boolean = true) {
+    fun findWinner(): Player? {
+        if (player0.score > 20) {
+            return player0
+        }
+        if (player1.score > 20) {
+            return player1
+        }
+        return null
+    }
+
+    fun advance(spaces: Int): Universe {
+        val newPlayer0 = if (player0IsNext) { player0.advance(spaces) } else { player0 }
+        val newPlayer1 = if (!player0IsNext) { player1.advance(spaces) } else { player1 }
+        return Universe(newPlayer0, newPlayer1, !player0IsNext)
+    }
+
+    val nextPlayer: Player
+        get() = when(player0IsNext) {
+            true -> player0
+            else -> player1
+        }
+}

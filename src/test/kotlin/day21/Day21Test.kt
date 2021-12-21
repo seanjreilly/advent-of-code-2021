@@ -76,4 +76,64 @@ class Day21Test {
     fun `part1 should parse input, play until the first player's score is 1000 or higher, and then return the losing players turn multiplied the number of times the die was rolled`() {
         assert(part1(sampleInput) == 739785)
     }
+
+    @Nested
+    inner class UniverseTest {
+        @Test
+        fun `constructor should return a new universe, with the first player playing next`() {
+            val players = parse(sampleInput)
+            val universe = Universe(players[0], players[1])
+
+            assert(universe.nextPlayer == players[0])
+        }
+
+        @Test
+        fun `findWinner should return null if no player has a score of 21 or higher`() {
+            val players = parse(sampleInput)
+            val universe = Universe(players[0], players[1])
+
+            val result: Player? = universe.findWinner()
+
+            assert(result == null)
+        }
+
+        @Test
+        fun `findWinner should return player 0 if that player has a score of 21 or higher`() {
+            val player0 = Player(0, 4, 21)
+            val player1 = Player(1, 6, 20)
+            val universe = Universe(player0, player1)
+
+            val result = universe.findWinner()
+
+            assert(result === player0)
+        }
+
+        @Test
+        fun `findWinner should return player 1 if that player has a score of 21 or higher`() {
+            val player0 = Player(0, 4, 20)
+            val player1 = Player(1, 6, 21)
+            val universe = Universe(player0, player1)
+
+            val result = universe.findWinner()
+
+            assert(result === player1)
+        }
+
+        @Test
+        fun `advance should return a new universe with the next player's score and position advanced, and a different nextPlayer`() {
+            val players = parse(sampleInput)
+            val universe = Universe(players[0], players[1])
+            val advanceAmount = 8
+            val (expectedScore, expectedPosition) = universe.nextPlayer.advance(advanceAmount).let { Pair(it.score, it.position)  }
+
+            val result:Universe = universe.advance(advanceAmount)
+
+            assert(result !== universe)
+            assert(result != universe)
+            assert(result.nextPlayer.id != universe.nextPlayer.id)
+            assert(result.nextPlayer != result.player0)
+            assert(result.player0.score == expectedScore )
+            assert(result.player0.position == expectedPosition )
+        }
+    }
 }
