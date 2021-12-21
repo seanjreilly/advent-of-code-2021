@@ -14,15 +14,16 @@ fun part1(input: List<String>): Int {
     val die = DeterministicDie()
     while (true) {
         //alternate players by taking the player from the head of the queue and adding them back to the tail
-        val player = players.remove()
-        players.add(player)
+        var player = players.remove()
 
-        player.score += player.advance(die.roll(3)) + 1 //zero-based position so we need to add 1 to the score
+        player = player.advance(die.roll(3))
         if (player.score >= 1000) {
             //we have a winner
             val losingPlayersScore = players.first.score
             return losingPlayersScore * die.timesRolled
         }
+
+        players.add(player)
     }
 }
 
@@ -62,9 +63,10 @@ internal fun parse(input: List<String>): LinkedList<Player> {
     return LinkedList(players)
 }
 
-internal data class Player(val id: Int, var position: Int, var score: Int) {
-    fun advance(spaces: Int) : Int {
-        position = (position + spaces) % 10
-        return position
+internal data class Player(val id: Int, val position: Int, val score: Int) {
+    fun advance(spaces: Int) : Player {
+        val newPosition = (position + spaces) % 10
+        val newScore = score + newPosition + 1
+        return Player(id, newPosition, newScore)
     }
 }
