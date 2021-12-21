@@ -54,14 +54,15 @@ internal class DeterministicDie {
 
 internal fun parse(input: List<String>): LinkedList<Player> {
     val players = input
-        .map { it.toCharArray().last().toString().toInt() - 1 }
-        .map { Player(it, 0) }
+        .map { it.toCharArray() }
+        .map { Pair(it[7].toString().toInt() , it.last().toString().toInt() - 1) }
+        .map { Player(it.first, it.second, 0) }
         .toList()
 
     return LinkedList(players)
 }
 
-internal data class Player(var position: Int, var score: Int) {
+internal data class Player(val id: Int, var position: Int, var score: Int) {
     fun advance(spaces: Int) : Int {
         position = (position + spaces) % 10
         return position

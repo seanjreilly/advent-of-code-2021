@@ -65,8 +65,11 @@ class Day21Test {
         assert(players.size == 2)
         assert(players[0].position == 3) //use zero-based positions instead of one-based
         assert(players[0].score == 0)
+        assert(players[0].id == 1)
+
         assert(players[1].position == 7) //use zero-based positions instead of one-based
         assert(players[1].score == 0)
+        assert(players[1].id == 2)
     }
 
     @Test
