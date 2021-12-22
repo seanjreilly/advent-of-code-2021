@@ -1,6 +1,7 @@
 package day22
 
 import utils.readInput
+import java.lang.IllegalArgumentException
 
 fun main() {
     val input = readInput("Day22")
@@ -60,5 +61,24 @@ internal data class Cuboid(val xRange: IntRange, val yRange: IntRange, val zRang
         val result = fragments.filter { it.size > 0 }
         assert(result.sumOf { it.size } == this.size - other.size)
         return result
+    }
+}
+
+private val parseRegex = """(on|off) x=(-?\d+)..(-?\d+),y=(-?\d+)..(-?\d+),z=(-?\d+)..(-?\d+)""".toRegex()
+internal fun parse(input: List<String>): List<Pair<Boolean, Cuboid>> {
+    return input.map { line ->
+        val matches = parseRegex.matchEntire(line)!!.groupValues.drop(1)
+        val operation = when(matches.first()) {
+            "on" -> true
+            "off" -> false
+            else -> throw IllegalArgumentException("unexpected command '${matches.first()}' supported commands are 'on' and 'off'")
+        }
+
+        val (xRange, yRange, zRange) = matches.drop(1)
+            .map (String::toInt)
+            .windowed(2, 2)
+            .map { it[0]..it[1] }
+
+        Pair(operation, Cuboid(xRange, yRange, zRange))
     }
 }
