@@ -129,12 +129,12 @@ class Day22Test {
             val result = cuboid - other
             assert(result.size == 6)
             assert(result.sumOf {it.size} == cuboid.size - other.size)
-            assert(result.contains(Cuboid(1..3, 1..3, 1..1)))
-            assert(result.contains(Cuboid(1..3, 1..3, 3..3)))
-            assert(result.contains(Cuboid(1..1, 2..2, 1..3)))
-            assert(result.contains(Cuboid(3..3, 2..2, 1..3)))
-            assert(result.contains(Cuboid(2..2, 1..1, 2..2)))
-            assert(result.contains(Cuboid(2..2, 3..3, 2..2)))
+            assert(result.contains(Cuboid(1..1, 1..3, 1..3)))
+            assert(result.contains(Cuboid(3..3, 1..3, 1..3)))
+            assert(result.contains(Cuboid(2..2, 1..1, 1..3)))
+            assert(result.contains(Cuboid(2..2, 3..3, 1..3)))
+            assert(result.contains(Cuboid(2..2, 2..2, 1..1)))
+            assert(result.contains(Cuboid(2..2, 2..2, 3..3)))
 
             result.forEach {
                 assert(!other.contains(it))
@@ -264,7 +264,25 @@ class Day22Test {
             assert(result.isEmpty())
         }
 
-        //TODO: carry on/off-ness?
+        @Test
+        fun `difference should return the correct result given another cuboid that only partially intersects with this one`() {
+            val cuboid = Cuboid(1..3, 1..3, 1..3)
+            val other = Cuboid(1..3, 1..3, 3..5)
+
+            val result = cuboid - other
+            assert(result.size == 1)
+            assert(result[0] == Cuboid(1..3, 1..3, 1..2))
+        }
+
+        @Test
+        fun `difference should return the correct result given another cuboid which intersects at a 3d offset`() {
+            val cuboid = Cuboid(11..13, 11..13, 11..13)
+            val other = Cuboid(10..12, 10..12, 10..12)
+
+            val difference = cuboid - other
+
+            assert(difference.sumOf { it.size } == 19)
+        }
     }
 
     val sampleInput = """
@@ -302,5 +320,26 @@ class Day22Test {
         assert(result.last() == Pair(true, Cuboid(967..23432, 45373..81175, 27513..53682)))
         assert(result.count { !it.first } == 5)
         assert(result.count { it.first } == 17)
+    }
+
+    @Test
+    fun `part1 should parse instructions, discard instructions outside of -50 to 50, and return the total number of on cubes after following all commands in order`() {
+        assert(part1(sampleInput) == 590784)
+    }
+
+    @Test
+    fun `processInstructions should work with a small set of instructions`() {
+        val smallInput = """
+            on x=10..12,y=10..12,z=10..12
+            on x=11..13,y=11..13,z=11..13
+            off x=9..11,y=9..11,z=9..11
+            on x=10..10,y=10..10,z=10..10
+        """.trimIndent().lines()
+
+        val instructions = parse(smallInput)
+
+        val result = processInstructions(instructions)
+
+        assert (result.sumOf { it.size } == 39)
     }
 }
