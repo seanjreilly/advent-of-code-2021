@@ -89,9 +89,6 @@ internal data class Cuboid(val xRange: IntRange, val yRange: IntRange, val zRang
     }
 
     operator fun minus(other: Cuboid): List<Cuboid> {
-        if (other.contains(this)) {
-            return emptyList()
-        }
         if (!intersects(other)) {
             return listOf(this)
         }
