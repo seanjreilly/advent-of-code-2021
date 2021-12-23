@@ -26,8 +26,9 @@ fun part1(input: List<String>): Long {
     return result.sumOf { it.size }
 }
 
-fun part2(input: List<String>): Int {
-    return input.size
+fun part2(input: List<String>): Long {
+    val result = processInstructions(parse(input))
+    return result.sumOf { it.size }
 }
 
 internal fun processInstructions(instructions: List<Pair<Boolean, Cuboid>>): MutableList<Cuboid> {
