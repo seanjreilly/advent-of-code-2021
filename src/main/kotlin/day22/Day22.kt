@@ -12,7 +12,7 @@ fun main() {
     println(part2(input))
 }
 
-fun part1(input: List<String>): Int {
+fun part1(input: List<String>): Long {
     val validRange = -50..50
     operator fun IntRange.contains(other:IntRange): Boolean {
         return other.first in this && other.last in this
@@ -70,7 +70,7 @@ internal data class Cuboid(val xRange: IntRange, val yRange: IntRange, val zRang
         xRange.isEmpty() -> 0
         yRange.isEmpty() -> 0
         zRange.isEmpty() -> 0
-        else -> (xRange.last - xRange.first + 1) * (yRange.last - yRange.first + 1) * (zRange.last - zRange.first + 1)
+        else -> (xRange.last - xRange.first + 1).toLong() * (yRange.last - yRange.first + 1).toLong() * (zRange.last - zRange.first + 1).toLong()
     }
 
     fun contains(other: Cuboid): Boolean {

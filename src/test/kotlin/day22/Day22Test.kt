@@ -19,7 +19,7 @@ class Day22Test {
         fun `size should return the number of points in the cuboid`() {
             val cuboid = Cuboid(10..12, 10..12, 10..12)
 
-            assert(cuboid.size == 27)
+            assert(cuboid.size == 27L)
         }
 
         @Test
@@ -27,7 +27,7 @@ class Day22Test {
         fun `size should return zero given an empty range`() {
             val cuboid = Cuboid(10..12, 10 until 10, 10 .. 12)
 
-            assert(cuboid.size == 0)
+            assert(cuboid.size == 0L)
         }
 
         @Suppress("EmptyRange")
@@ -35,7 +35,7 @@ class Day22Test {
         fun `size should return zero given a negative range`() {
             val cuboid = Cuboid(12..10, 12 until 10, 12 .. 10)
 
-            assert(cuboid.size == 0)
+            assert(cuboid.size == 0L)
         }
 
         @Test
@@ -281,7 +281,7 @@ class Day22Test {
 
             val difference = cuboid - other
 
-            assert(difference.sumOf { it.size } == 19)
+            assert(difference.sumOf { it.size } == 19L)
         }
     }
 
@@ -324,7 +324,7 @@ class Day22Test {
 
     @Test
     fun `part1 should parse instructions, discard instructions outside of -50 to 50, and return the total number of on cubes after following all commands in order`() {
-        assert(part1(sampleInput) == 590784)
+        assert(part1(sampleInput) == 590784L)
     }
 
     @Test
@@ -340,6 +340,6 @@ class Day22Test {
 
         val result = processInstructions(instructions)
 
-        assert (result.sumOf { it.size } == 39)
+        assert (result.sumOf { it.size } == 39L)
     }
 }
