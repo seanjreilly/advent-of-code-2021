@@ -10,8 +10,15 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    val startingSpaceMap = parse(input)
+    val startingSpaceMap = parsePart1(input)
+    return findCostOfOrganisingAmphipods(startingSpaceMap)
+}
 
+fun part2(input: List<String>): Int {
+    return input.size
+}
+
+private fun findCostOfOrganisingAmphipods(startingSpaceMap: SpaceMap): Int {
     val visitedSpaceMaps = mutableSetOf<SpaceMap>()
     val tentativeCosts = mapOf(startingSpaceMap to 0).toMutableMap()
 
@@ -39,16 +46,17 @@ fun part1(input: List<String>): Int {
                 val altCost = tentativeCosts[currentSpaceMap]!! + cost
                 if (currentCostOfConfiguration == null || altCost < currentCostOfConfiguration) { //might be one we haven't seen before
                     tentativeCosts[spaceMap] = altCost
-                    unvisitedSpaceMaps.add(Pair(spaceMap, altCost)) //don't remove the old entry (slow), just leave a duplicate entry
+                    unvisitedSpaceMaps.add(
+                        Pair(
+                            spaceMap,
+                            altCost
+                        )
+                    ) //don't remove the old entry (slow), just leave a duplicate entry
                 }
             }
     }
 
     throw RuntimeException("couldn't find a path to the desired configuration")
-}
-
-fun part2(input: List<String>): Int {
-    return input.size
 }
 
 internal enum class AmphipodType(val movementCost: Int) {
@@ -59,7 +67,7 @@ internal enum class AmphipodType(val movementCost: Int) {
 }
 
 private val parseRegex = """.{1,3}?(\w).(\w).(\w).(\w).{1,3}""".toRegex()
-internal fun parse(input: List<String>): SpaceMap {
+internal fun parsePart1(input: List<String>): SpaceMap {
     fun parseType(firstLetter:String): AmphipodType = AmphipodType.values().find { it.name.startsWith(firstLetter) }!!
 
     val (a1, b1, c1, d1) = parseRegex.matchEntire(input[2])!!.destructured

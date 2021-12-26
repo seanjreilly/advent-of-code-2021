@@ -216,7 +216,7 @@ class Day23Test {
               #########
         """.trimIndent().lines()
 
-        val spaceMap:SpaceMap = parse(input)
+        val spaceMap:SpaceMap = parsePart1(input)
         assert(spaceMap.positions.size == 19)
         assert(spaceMap.positions[0] == Bronze)
         assert(spaceMap.positions[1] == Amber)
