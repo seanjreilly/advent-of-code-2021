@@ -231,18 +231,18 @@ class Day23Test {
         }
     }
 
-//    @Test
-//    fun `part1 should parse the model and determine the cheapest path to a completed position`() {
-//        val input = """
-//            #############
-//            #...........#
-//            ###B#C#B#D###
-//              #A#D#C#A#
-//              #########
-//        """.trimIndent().lines()
-//
-//        assert(part1(input) == 12521)
-//    }
+    @Test
+    fun `part1 should parse the model and determine the cheapest path to a completed position`() {
+        val input = """
+            #############
+            #...........#
+            ###B#C#B#D###
+              #A#D#C#A#
+              #########
+        """.trimIndent().lines()
+
+        assert(part1(input) == 12521)
+    }
 
     private fun buildConfiguration(vararg setPositions: Pair<Int, AmphipodType?>) : Configuration {
         val positions = arrayOfNulls<AmphipodType>(19)

@@ -1,6 +1,7 @@
 package day23
 
 import utils.readInput
+import java.util.*
 
 fun main() {
     val input = readInput("Day23")
@@ -9,7 +10,46 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return input.size
+    val startingConfiguration = parse(input)
+
+    val visitedConfigurations = mutableSetOf<Configuration>()
+    val tentativeDistances = mapOf(startingConfiguration to 0).toMutableMap()
+
+    val unvisitedConfigurations = PriorityQueue<Pair<Configuration, Int>>(compareBy { it.second })
+    unvisitedConfigurations += Pair(startingConfiguration, 0)
+
+
+
+    while (unvisitedConfigurations.isNotEmpty()) {
+        val currentConfiguration = unvisitedConfigurations.remove().first
+
+        //do an extra filter to remove the duplicate entries from the priority queue (see below)
+        if (currentConfiguration in visitedConfigurations) {
+            continue
+        }
+        visitedConfigurations += currentConfiguration
+
+        if (currentConfiguration.isFinished()) {
+            return tentativeDistances[currentConfiguration]!!
+        }
+
+        currentConfiguration.nextMoves()
+            .filter { it.first !in visitedConfigurations }
+            .forEach { (configuration, cost) ->
+                if (configuration !in tentativeDistances.keys) {
+                    tentativeDistances[configuration] = Int.MAX_VALUE
+                }
+
+                val currentCostOfConfiguration = tentativeDistances[configuration]!!
+                val altCost = tentativeDistances[currentConfiguration]!! + cost
+                if (altCost < currentCostOfConfiguration) {
+                    tentativeDistances[configuration] = altCost
+                    unvisitedConfigurations.add(Pair(configuration, altCost)) //don't remove the old entry (slow), just leave a duplicate entry
+                }
+            }
+    }
+
+    throw RuntimeException("couldn't find a path to the desired configuration")
 }
 
 fun part2(input: List<String>): Int {
