@@ -99,7 +99,7 @@ class Day23Test {
                 7 to Amber,
             )
 
-            val results:Collection<Configuration> = configuration.nextMoves()
+            val results:Collection<Pair<Configuration, Int>> = configuration.nextMoves()
 
             assert(results.size == 28) //each of the amphipods in the top row can move to 7 hallway places
         }
@@ -122,9 +122,9 @@ class Day23Test {
 
             val results = configuration.nextMoves()
 
-            assert(results.map{ it.positions }.any { it[0] == Amber }) { "legal to move to top of A, if Amber" }
-            assert(results.map{ it.positions }.any { it[1] == Amber }) { "legal to move to bottom of A, if Amber" }
-            assert(!results.map{ it.positions }.any { it[0] == Bronze || it[1] == Bronze }) { "not legal to A, if Bronze" }
+            assert(results.map{ it.first.positions }.any { it[0] == Amber }) { "legal to move to top of A, if Amber" }
+            assert(results.map{ it.first.positions }.any { it[1] == Amber }) { "legal to move to bottom of A, if Amber" }
+            assert(!results.map{ it.first.positions }.any { it[0] == Bronze || it[1] == Bronze }) { "not legal to A, if Bronze" }
         }
         
         @Test
@@ -144,8 +144,8 @@ class Day23Test {
 
             val results = configuration.nextMoves()
 
-            assert(results.map{ it.positions }.any { it[0] == Amber }) { "legal to move to top of A, if Amber" }
-            assert(results.map{ it.positions }.any { it[2] == Bronze }) { "legal to move to top of B, if Bronze" }
+            assert(results.map{ it.first.positions }.any { it[0] == Amber }) { "legal to move to top of A, if Amber" }
+            assert(results.map{ it.first.positions }.any { it[2] == Bronze }) { "legal to move to top of B, if Bronze" }
         }
 
         @Test
@@ -165,8 +165,8 @@ class Day23Test {
 
             val results = configuration.nextMoves()
 
-            assert(!results.map{ it.positions }.any { it[0] == Amber }) { "not legal to move to top of A until other one clears" }
-            assert(!results.map{ it.positions }.any { it[2] == Bronze }) { "not legal to move to top of B until other one clears" }
+            assert(!results.map{ it.first.positions }.any { it[0] == Amber }) { "not legal to move to top of A until other one clears" }
+            assert(!results.map{ it.first.positions }.any { it[2] == Bronze }) { "not legal to move to top of B until other one clears" }
         }
 
         @Test
@@ -185,6 +185,24 @@ class Day23Test {
             val results = configuration.nextMoves()
 
             assert(results.isEmpty())
+        }
+
+        @Test
+        fun `nextMoves should return the next move and the cost of the next move`() {
+            val configuration = buildConfiguration(
+                0 to Amber,
+                1 to Amber,
+                2 to Bronze,
+                3 to Bronze,
+                4 to Copper,
+                5 to Copper,
+                7 to Desert,
+                18 to Desert,
+            )
+
+            val results = configuration.nextMoves()
+
+            assert(results.first { it.first.isFinished() }.second == 3000)
         }
     }
 

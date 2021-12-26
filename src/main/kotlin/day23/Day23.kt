@@ -48,19 +48,20 @@ internal data class Configuration(val positions: Array<AmphipodType?>) {
         return positions.contentEquals(FINISHED_POSITIONS)
     }
 
-    fun nextMoves(): Collection<Configuration> {
+    fun nextMoves(): List<Pair<Configuration, Int>> {
         return positions
             .mapIndexed{ index, it -> Pair(index, it) }
             .filter { it.second != null }
+            .map { Pair(it.first, it.second!!)}
             .flatMap { (index, amphipod) -> transitions[index]!!.map { Triple(index, amphipod, it) } }
             .filter { (_, _, transition) -> positions[transition.destination] == null} //destination can't be occupied
             .filter { (_, _, transition) -> transition.intermediateSpaces.all { positions[it] == null } } //no intermediate spaces can be occupied
-            .filter { (_, amphipod, transition) -> isLegalRoomTransition(transition.destination, amphipod!!)}
+            .filter { (_, amphipod, transition) -> isLegalRoomTransition(transition.destination, amphipod)}
             .map { (index, amphipod, transition) ->
                 val newPositions = positions.clone()
                 newPositions[index] = null
                 newPositions[transition.destination] = amphipod
-                Configuration(newPositions)
+                Pair(Configuration(newPositions), transition.distance * amphipod.movementCost)
             }
     }
 
