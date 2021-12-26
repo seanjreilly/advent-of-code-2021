@@ -82,7 +82,7 @@ internal fun parsePart1(input: List<String>): SpaceMap {
     return SpaceMap(positions, part1Configuration)
 }
 
-internal data class SpaceMap(val positions: Array<AmphipodType?>, private val configuration: Configuration) {
+internal class SpaceMap(val positions: Array<AmphipodType?>, private val configuration: Configuration) {
 
     fun isFinished(): Boolean = positions.contentEquals(configuration.finishedPositions)
 
