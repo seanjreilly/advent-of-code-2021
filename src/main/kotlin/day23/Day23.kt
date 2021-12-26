@@ -10,41 +10,36 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    val startingConfiguration = parse(input)
+    val startingSpaceMap = parse(input)
 
-    val visitedConfigurations = mutableSetOf<Configuration>()
-    val tentativeDistances = mapOf(startingConfiguration to 0).toMutableMap()
+    val visitedSpaceMaps = mutableSetOf<SpaceMap>()
+    val tentativeCosts = mapOf(startingSpaceMap to 0).toMutableMap()
 
-    val unvisitedConfigurations = PriorityQueue<Pair<Configuration, Int>>(compareBy { it.second })
-    unvisitedConfigurations += Pair(startingConfiguration, 0)
+    val unvisitedSpaceMaps = PriorityQueue<Pair<SpaceMap, Int>>(compareBy { it.second })
+    unvisitedSpaceMaps += Pair(startingSpaceMap, 0)
 
-
-
-    while (unvisitedConfigurations.isNotEmpty()) {
-        val currentConfiguration = unvisitedConfigurations.remove().first
+    while (unvisitedSpaceMaps.isNotEmpty()) {
+        val currentSpaceMap = unvisitedSpaceMaps.remove().first
 
         //do an extra filter to remove the duplicate entries from the priority queue (see below)
-        if (currentConfiguration in visitedConfigurations) {
+        if (currentSpaceMap in visitedSpaceMaps) {
             continue
         }
-        visitedConfigurations += currentConfiguration
+        visitedSpaceMaps += currentSpaceMap
 
-        if (currentConfiguration.isFinished()) {
-            return tentativeDistances[currentConfiguration]!!
+        if (currentSpaceMap.isFinished()) {
+            return tentativeCosts[currentSpaceMap]!!
         }
 
-        currentConfiguration.nextMoves()
-            .filter { it.first !in visitedConfigurations }
-            .forEach { (configuration, cost) ->
-                if (configuration !in tentativeDistances.keys) {
-                    tentativeDistances[configuration] = Int.MAX_VALUE
-                }
+        currentSpaceMap.nextMoves()
+            .filter { it.first !in visitedSpaceMaps }
+            .forEach { (spaceMap, cost) ->
 
-                val currentCostOfConfiguration = tentativeDistances[configuration]!!
-                val altCost = tentativeDistances[currentConfiguration]!! + cost
-                if (altCost < currentCostOfConfiguration) {
-                    tentativeDistances[configuration] = altCost
-                    unvisitedConfigurations.add(Pair(configuration, altCost)) //don't remove the old entry (slow), just leave a duplicate entry
+                val currentCostOfConfiguration = tentativeCosts[spaceMap]
+                val altCost = tentativeCosts[currentSpaceMap]!! + cost
+                if (currentCostOfConfiguration == null || altCost < currentCostOfConfiguration) { //might be one we haven't seen before
+                    tentativeCosts[spaceMap] = altCost
+                    unvisitedSpaceMaps.add(Pair(spaceMap, altCost)) //don't remove the old entry (slow), just leave a duplicate entry
                 }
             }
     }
@@ -64,7 +59,7 @@ internal enum class AmphipodType(val movementCost: Int) {
 }
 
 private val parseRegex = """.{1,3}?(\w).(\w).(\w).(\w).{1,3}""".toRegex()
-internal fun parse(input: List<String>): Configuration {
+internal fun parse(input: List<String>): SpaceMap {
     fun parseType(firstLetter:String): AmphipodType = AmphipodType.values().find { it.name.startsWith(firstLetter) }!!
 
     val (a1, b1, c1, d1) = parseRegex.matchEntire(input[2])!!.destructured
@@ -80,15 +75,15 @@ internal fun parse(input: List<String>): Configuration {
     positions[6] = parseType(d1)
     positions[7] = parseType(d2)
 
-    return Configuration(positions)
+    return SpaceMap(positions)
 }
 
-internal data class Configuration(val positions: Array<AmphipodType?>) {
+internal data class SpaceMap(val positions: Array<AmphipodType?>) {
     fun isFinished(): Boolean {
         return positions.contentEquals(FINISHED_POSITIONS)
     }
 
-    fun nextMoves(): List<Pair<Configuration, Int>> {
+    fun nextMoves(): List<Pair<SpaceMap, Int>> {
         return positions
             .mapIndexed{ index, it -> Pair(index, it) }
             .filter { it.second != null }
@@ -101,7 +96,7 @@ internal data class Configuration(val positions: Array<AmphipodType?>) {
                 val newPositions = positions.clone()
                 newPositions[index] = null
                 newPositions[transition.destination] = amphipod
-                Pair(Configuration(newPositions), transition.distance * amphipod.movementCost)
+                Pair(SpaceMap(newPositions), transition.distance * amphipod.movementCost)
             }
     }
 
@@ -131,7 +126,7 @@ internal data class Configuration(val positions: Array<AmphipodType?>) {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Configuration
+        other as SpaceMap
 
         if (!positions.contentEquals(other.positions)) return false
 

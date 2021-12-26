@@ -37,10 +37,10 @@ class Day23Test {
     }
 
     @Nested
-    inner class ConfigurationTest {
+    inner class SpaceMapTest {
         @Test
-        fun `isFinished should return false given a configuration that is not complete`() {
-            val configuration = buildConfiguration(
+        fun `isFinished should return false given a map that is not complete`() {
+            val map = buildSpaceMap(
                 0 to Desert,
                 1 to Desert,
                 2 to Copper,
@@ -51,12 +51,12 @@ class Day23Test {
                 7 to Amber,
             )
 
-            assert(!configuration.isFinished())
+            assert(!map.isFinished())
         }
 
         @Test
-        fun `isFinished should return false given a configuration that is almost complete`() {
-            val configuration = buildConfiguration(
+        fun `isFinished should return false given a map that is almost complete`() {
+            val map = buildSpaceMap(
                 0 to Amber,
                 1 to Amber,
                 2 to Bronze,
@@ -67,12 +67,12 @@ class Day23Test {
                 18 to Desert, //one amphipod still in the hallway
             )
 
-            assert(!configuration.isFinished())
+            assert(!map.isFinished())
         }
 
         @Test
-        fun `isFinished should return true given a configuration that is complete`() {
-            val configuration = buildConfiguration(
+        fun `isFinished should return true given a map that is complete`() {
+            val map = buildSpaceMap(
                 0 to Amber,
                 1 to Amber,
                 2 to Bronze,
@@ -83,12 +83,12 @@ class Day23Test {
                 7 to Desert,
             )
 
-            assert(configuration.isFinished())
+            assert(map.isFinished())
         }
 
         @Test
         fun `nextMoves should return multiple moves where possible`() {
-            val configuration = buildConfiguration(
+            val map = buildSpaceMap(
                 0 to Amber,
                 2 to Bronze,
                 4 to Copper,
@@ -99,14 +99,14 @@ class Day23Test {
                 7 to Amber,
             )
 
-            val results:Collection<Pair<Configuration, Int>> = configuration.nextMoves()
+            val results:Collection<Pair<SpaceMap, Int>> = map.nextMoves()
 
             assert(results.size == 28) //each of the amphipods in the top row can move to 7 hallway places
         }
 
         @Test
         fun `nextMoves should allow amphipods of the correct type to empty an empty room`() {
-            val configuration = buildConfiguration(
+            val map = buildSpaceMap(
                 0 to null,
                 1 to null,
                 2 to null,
@@ -120,7 +120,7 @@ class Day23Test {
                 13 to Bronze
             )
 
-            val results = configuration.nextMoves()
+            val results = map.nextMoves()
 
             assert(results.map{ it.first.positions }.any { it[0] == Amber }) { "legal to move to top of A, if Amber" }
             assert(results.map{ it.first.positions }.any { it[1] == Amber }) { "legal to move to bottom of A, if Amber" }
@@ -129,7 +129,7 @@ class Day23Test {
         
         @Test
         fun `nextMoves should allow an amphipod of the correct type to enter a partially full room with the correct amphipod in the other room space`() {
-            val configuration = buildConfiguration(
+            val map = buildSpaceMap(
                 0 to null,
                 1 to Amber,
                 2 to null,
@@ -142,7 +142,7 @@ class Day23Test {
                 18 to Bronze
             )
 
-            val results = configuration.nextMoves()
+            val results = map.nextMoves()
 
             assert(results.map{ it.first.positions }.any { it[0] == Amber }) { "legal to move to top of A, if Amber" }
             assert(results.map{ it.first.positions }.any { it[2] == Bronze }) { "legal to move to top of B, if Bronze" }
@@ -150,7 +150,7 @@ class Day23Test {
 
         @Test
         fun `nextMoves should not allow an amphipod of the right typ to enter a partially full room while an correct amphipod is in the room`() {
-            val configuration = buildConfiguration(
+            val map = buildSpaceMap(
                 0 to null,
                 1 to Bronze,
                 2 to null,
@@ -163,7 +163,7 @@ class Day23Test {
                 18 to Bronze
             )
 
-            val results = configuration.nextMoves()
+            val results = map.nextMoves()
 
             assert(!results.map{ it.first.positions }.any { it[0] == Amber }) { "not legal to move to top of A until other one clears" }
             assert(!results.map{ it.first.positions }.any { it[2] == Bronze }) { "not legal to move to top of B until other one clears" }
@@ -171,7 +171,7 @@ class Day23Test {
 
         @Test
         fun `nextMoves should not allow any moves when blocked`() {
-            val configuration = buildConfiguration(
+            val map = buildSpaceMap(
                 9 to Copper,
                 11 to Copper,
                 13 to Desert,
@@ -182,14 +182,14 @@ class Day23Test {
                 18 to Amber
             )
 
-            val results = configuration.nextMoves()
+            val results = map.nextMoves()
 
             assert(results.isEmpty())
         }
 
         @Test
         fun `nextMoves should return the next move and the cost of the next move`() {
-            val configuration = buildConfiguration(
+            val map = buildSpaceMap(
                 0 to Amber,
                 1 to Amber,
                 2 to Bronze,
@@ -200,7 +200,7 @@ class Day23Test {
                 18 to Desert,
             )
 
-            val results = configuration.nextMoves()
+            val results = map.nextMoves()
 
             assert(results.first { it.first.isFinished() }.second == 3000)
         }
@@ -216,18 +216,18 @@ class Day23Test {
               #########
         """.trimIndent().lines()
 
-        val configuration:Configuration = parse(input)
-        assert(configuration.positions.size == 19)
-        assert(configuration.positions[0] == Bronze)
-        assert(configuration.positions[1] == Amber)
-        assert(configuration.positions[2] == Copper)
-        assert(configuration.positions[3] == Desert)
-        assert(configuration.positions[4] == Bronze)
-        assert(configuration.positions[5] == Copper)
-        assert(configuration.positions[6] == Desert)
-        assert(configuration.positions[7] == Amber)
+        val spaceMap:SpaceMap = parse(input)
+        assert(spaceMap.positions.size == 19)
+        assert(spaceMap.positions[0] == Bronze)
+        assert(spaceMap.positions[1] == Amber)
+        assert(spaceMap.positions[2] == Copper)
+        assert(spaceMap.positions[3] == Desert)
+        assert(spaceMap.positions[4] == Bronze)
+        assert(spaceMap.positions[5] == Copper)
+        assert(spaceMap.positions[6] == Desert)
+        assert(spaceMap.positions[7] == Amber)
         (8 until 19).forEach {
-            assert(configuration.positions[it] == null)
+            assert(spaceMap.positions[it] == null)
         }
     }
 
@@ -244,9 +244,9 @@ class Day23Test {
         assert(part1(input) == 12521)
     }
 
-    private fun buildConfiguration(vararg setPositions: Pair<Int, AmphipodType?>) : Configuration {
+    private fun buildSpaceMap(vararg setPositions: Pair<Int, AmphipodType?>) : SpaceMap {
         val positions = arrayOfNulls<AmphipodType>(19)
         setPositions.forEach { positions[it.first] = it.second }
-        return Configuration(positions)
+        return SpaceMap(positions)
     }
 }
