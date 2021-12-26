@@ -46,12 +46,8 @@ private fun findCostOfOrganisingAmphipods(startingSpaceMap: SpaceMap): Int {
                 val altCost = tentativeCosts[currentSpaceMap]!! + cost
                 if (currentCostOfConfiguration == null || altCost < currentCostOfConfiguration) { //might be one we haven't seen before
                     tentativeCosts[spaceMap] = altCost
-                    unvisitedSpaceMaps.add(
-                        Pair(
-                            spaceMap,
-                            altCost
-                        )
-                    ) //don't remove the old entry (slow), just leave a duplicate entry
+                    //don't remove the old entry (slow), just leave a duplicate entry
+                    unvisitedSpaceMaps.add(Pair(spaceMap, altCost))
                 }
             }
     }
@@ -83,49 +79,28 @@ internal fun parsePart1(input: List<String>): SpaceMap {
     positions[6] = parseType(d1)
     positions[7] = parseType(d2)
 
-    return SpaceMap(positions)
+    return SpaceMap(positions, part1Configuration)
 }
 
-internal data class SpaceMap(val positions: Array<AmphipodType?>) {
-    fun isFinished(): Boolean {
-        return positions.contentEquals(FINISHED_POSITIONS)
-    }
+internal data class SpaceMap(val positions: Array<AmphipodType?>, private val configuration: Configuration) {
+
+    fun isFinished(): Boolean = positions.contentEquals(configuration.finishedPositions)
 
     fun nextMoves(): List<Pair<SpaceMap, Int>> {
         return positions
             .mapIndexed{ index, it -> Pair(index, it) }
             .filter { it.second != null }
             .map { Pair(it.first, it.second!!)}
-            .flatMap { (index, amphipod) -> transitions[index]!!.map { Triple(index, amphipod, it) } }
+            .flatMap { (index, amphipod) -> configuration.transitions[index]!!.map { Triple(index, amphipod, it) } }
             .filter { (_, _, transition) -> positions[transition.destination] == null} //destination can't be occupied
             .filter { (_, _, transition) -> transition.intermediateSpaces.all { positions[it] == null } } //no intermediate spaces can be occupied
-            .filter { (_, amphipod, transition) -> isLegalRoomTransition(transition.destination, amphipod)}
+            .filter { (_, amphipod, transition) -> configuration.isLegalRoomTransition(transition.destination, amphipod, positions) }
             .map { (index, amphipod, transition) ->
                 val newPositions = positions.clone()
                 newPositions[index] = null
                 newPositions[transition.destination] = amphipod
-                Pair(SpaceMap(newPositions), transition.distance * amphipod.movementCost)
+                Pair(SpaceMap(newPositions, configuration), transition.distance * amphipod.movementCost)
             }
-    }
-
-    private fun isLegalRoomTransition(destination: Int, amphipod: AmphipodType) : Boolean {
-        val legalRoomIds = mapOf(
-            AmphipodType.Amber to setOf(0,1),
-            AmphipodType.Bronze to setOf(2,3),
-            AmphipodType.Copper to setOf(4,5),
-            AmphipodType.Desert to setOf(6,7)
-        )
-
-        if (destination > 7) {
-            return true // we don't care about hallways
-        }
-
-        //we already know the destination is empty, or we wouldn't have gotten this far. just check the other space in the room
-        val otherSpaceInRoom = if (destination % 2 == 1) { destination - 1 } else { destination + 1 }
-        if (positions[otherSpaceInRoom] != null && positions[otherSpaceInRoom] != amphipod) {
-            return false //different type so one of them is wrong
-        }
-        return destination in legalRoomIds[amphipod]!!
     }
 
     //region override equals and hashcode so data class works as expected
@@ -147,88 +122,113 @@ internal data class SpaceMap(val positions: Array<AmphipodType?>) {
 
     //endregion
 
-    companion object {
-        //positions 0-7 rooms
-        //positions 8-18 hallway
-        //entrance to a room is first top position + 10
-        //can't stop on positions with three neighbours
-        private val neighbours = mapOf(
-            0 to listOf(1, 10), //top of A
-            1 to listOf(0), // bottom of A
-            2 to listOf(3, 12), //top of B
-            3 to listOf(2), //bottom of B
-            4 to listOf(5, 14), //top of C
-            5 to listOf(4), //bottom of C
-            6 to listOf(7, 16), //top of D
-            7 to listOf(6), //bottom of D
-            8 to listOf(9), //hallway
-            9 to listOf(8, 10), //hallway
-            10 to listOf(9, 11, 0), //hallway, can't stop
-            11 to listOf(10, 12), //hallway
-            12 to listOf(11, 13, 2), //hallway, can't stop
-            13 to listOf(12, 14), //hallway
-            14 to listOf(13, 15, 4), //hallway, can't stop
-            15 to listOf(14, 16), //hallway
-            16 to listOf(15, 17, 6), //hallway, can't stop
-            17 to listOf(16, 18), //hallway
-            18 to listOf(17), //hallway
+}
+
+internal object part1Configuration : Configuration() {
+    override val transitions: Map<Int, Set<Transition>>
+
+    override val neighbours: Map<Int, List<Int>> = mapOf(
+        0 to listOf(1, 10), //top of A
+        1 to listOf(0), // bottom of A
+        2 to listOf(3, 12), //top of B
+        3 to listOf(2), //bottom of B
+        4 to listOf(5, 14), //top of C
+        5 to listOf(4), //bottom of C
+        6 to listOf(7, 16), //top of D
+        7 to listOf(6), //bottom of D
+        8 to listOf(9), //hallway
+        9 to listOf(8, 10), //hallway
+        10 to listOf(9, 11, 0), //hallway, can't stop
+        11 to listOf(10, 12), //hallway
+        12 to listOf(11, 13, 2), //hallway, can't stop
+        13 to listOf(12, 14), //hallway
+        14 to listOf(13, 15, 4), //hallway, can't stop
+        15 to listOf(14, 16), //hallway
+        16 to listOf(15, 17, 6), //hallway, can't stop
+        17 to listOf(16, 18), //hallway
+        18 to listOf(17), //hallway
+    )
+
+    override val finishedPositions: Array<AmphipodType?> = arrayOf(
+        AmphipodType.Amber, AmphipodType.Amber,
+        AmphipodType.Bronze, AmphipodType.Bronze,
+        AmphipodType.Copper, AmphipodType.Copper,
+        AmphipodType.Desert, AmphipodType.Desert,
+        null, null,
+        null, null, null, null, null, null, null,
+        null, null
+    )
+
+    init {
+        val rooms = (0..7).toList()
+        val visitableHallwaySpaces = listOf(8,9,11,13,15,17,18)
+
+        val tmp = mutableMapOf<Int, MutableSet<Transition>>()
+        (0..18).forEach { tmp[it] = mutableSetOf() }
+
+        visitableHallwaySpaces.forEach { sourceSpace  ->
+            rooms.forEach { destinationSpace ->
+                tmp[sourceSpace]!!.add(findTransition(sourceSpace, destinationSpace))
+            }
+        }
+
+        rooms.forEach { sourceSpace ->
+            rooms.filter { it != sourceSpace }.forEach { destinationSpace ->
+                tmp[sourceSpace]!!.add(findTransition(sourceSpace, destinationSpace))
+            }
+            visitableHallwaySpaces.forEach {destinationSpace ->
+                tmp[sourceSpace]!!.add(findTransition(sourceSpace, destinationSpace))
+            }
+        }
+
+        transitions = tmp
+    }
+
+    override fun isLegalRoomTransition(destination: Int, amphipod: AmphipodType, positions: Array<AmphipodType?>) : Boolean {
+        val legalRoomIds = mapOf(
+            AmphipodType.Amber to setOf(0,1),
+            AmphipodType.Bronze to setOf(2,3),
+            AmphipodType.Copper to setOf(4,5),
+            AmphipodType.Desert to setOf(6,7)
         )
 
-        private val transitions:Map<Int, Set<Transition>>
-        init {
-            val rooms = (0..7).toList()
-            val visitableHallwaySpaces = listOf(8,9,11,13,15,17,18)
-
-            val tmp = mutableMapOf<Int, MutableSet<Transition>>()
-            (0..18).forEach { tmp[it] = mutableSetOf() }
-
-            visitableHallwaySpaces.forEach { sourceSpace  ->
-                rooms.forEach { destinationSpace ->
-                    tmp[sourceSpace]!!.add(findTransition(sourceSpace, destinationSpace))
-                }
-            }
-
-            rooms.forEach { sourceSpace ->
-                rooms.filter { it != sourceSpace }.forEach { destinationSpace ->
-                    tmp[sourceSpace]!!.add(findTransition(sourceSpace, destinationSpace))
-                }
-                visitableHallwaySpaces.forEach {destinationSpace ->
-                    tmp[sourceSpace]!!.add(findTransition(sourceSpace, destinationSpace))
-                }
-            }
-
-            transitions = tmp
+        if (destination > 7) {
+            return true // we don't care about hallways
         }
 
-        internal data class Transition(val intermediateSpaces: Set<Int>, val destination: Int) {
-            val distance: Int = intermediateSpaces.size + 1
+        //we already know the destination is empty, or we wouldn't have gotten this far. just check the other space in the room
+        val otherSpaceInRoom = if (destination % 2 == 1) { destination - 1 } else { destination + 1 }
+        if (positions[otherSpaceInRoom] != null && positions[otherSpaceInRoom] != amphipod) {
+            return false //different type so one of them is wrong
         }
+        return destination in legalRoomIds[amphipod]!!
+    }
+}
 
-        private fun findTransition(from:Int, to:Int) : Transition {
-            val path = findPath(listOf(from), to)!!
-            return Transition(path.drop(1).dropLast(1).toSet(), path.last())
-        }
+internal abstract class Configuration {
+    internal abstract val finishedPositions: Array<AmphipodType?>
+    internal abstract val transitions:Map<Int, Set<Transition>>
+    protected abstract val neighbours: Map<Int, List<Int>>
+    abstract fun isLegalRoomTransition(destination: Int, amphipod: AmphipodType, positions: Array<AmphipodType?>) : Boolean
 
-        private fun findPath(path:List<Int>, destination: Int): List<Int>? {
-            if (path.last() == destination) { return path }
-            val nextSteps = neighbours[path.last()]!!
-                .filter { it !in path }
+    internal data class Transition(val intermediateSpaces: Set<Int>, val destination: Int) {
+        val distance: Int = intermediateSpaces.size + 1
+    }
 
-            if (nextSteps.isEmpty()) { return null }
+    protected fun findTransition(from:Int, to:Int) : Transition {
+        val path = findPath(listOf(from), to)!!
+        return Transition(path.drop(1).dropLast(1).toSet(), path.last())
+    }
 
-            return nextSteps
-                .map { path + it }
-                .firstNotNullOfOrNull { findPath(it, destination) }
-        }
+    private fun findPath(path:List<Int>, destination: Int): List<Int>? {
+        if (path.last() == destination) { return path }
+        val nextSteps = neighbours[path.last()]!!
+            .filter { it !in path }
 
-        private val FINISHED_POSITIONS = arrayOf(
-            AmphipodType.Amber, AmphipodType.Amber,
-            AmphipodType.Bronze, AmphipodType.Bronze,
-            AmphipodType.Copper, AmphipodType.Copper,
-            AmphipodType.Desert, AmphipodType.Desert,
-            null, null,
-            null, null, null, null, null, null, null,
-            null, null
-        )
+        if (nextSteps.isEmpty()) { return null }
+
+        return nextSteps
+            .map { path + it }
+            .firstNotNullOfOrNull { findPath(it, destination) }
     }
 }

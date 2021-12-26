@@ -247,6 +247,6 @@ class Day23Test {
     private fun buildSpaceMap(vararg setPositions: Pair<Int, AmphipodType?>) : SpaceMap {
         val positions = arrayOfNulls<AmphipodType>(19)
         setPositions.forEach { positions[it.first] = it.second }
-        return SpaceMap(positions)
+        return SpaceMap(positions, part1Configuration)
     }
 }
