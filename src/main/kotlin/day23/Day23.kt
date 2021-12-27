@@ -29,11 +29,9 @@ private fun findCostOfOrganisingAmphipods(startingSpaceMap: SpaceMap): Int {
     while (unvisitedSpaceMaps.isNotEmpty()) {
         val currentSpaceMap = unvisitedSpaceMaps.remove().first
 
-        //do an extra filter to remove the duplicate entries from the priority queue (see below)
-        if (currentSpaceMap in visitedSpaceMaps) {
-            continue
+        if (!visitedSpaceMaps.add(currentSpaceMap)) {
+            continue //duplicate entry (see below) that we've already processed. skip it
         }
-        visitedSpaceMaps += currentSpaceMap
 
         if (currentSpaceMap.isFinished()) {
             return tentativeCosts[currentSpaceMap]!!
@@ -48,7 +46,7 @@ private fun findCostOfOrganisingAmphipods(startingSpaceMap: SpaceMap): Int {
                 if (currentCostOfConfiguration == null || altCost < currentCostOfConfiguration) { //might be one we haven't seen before
                     tentativeCosts[spaceMap] = altCost
                     //don't remove the old entry (slow), just leave a duplicate entry
-                    unvisitedSpaceMaps.add(Pair(spaceMap, altCost))
+                    unvisitedSpaceMaps.add(Pair(spaceMap, altCost + spaceMap.heuristic()))
                 }
             }
     }
@@ -128,6 +126,41 @@ internal class SpaceMap(val positions: Array<AmphipodType?>, internal val config
             }
     }
 
+    fun heuristic(): Int {
+        var result = 0
+        var asFound = 0
+        var bsFound = 0
+        var csFound = 0
+        var dsFound = 0
+        for (i in positions.indices) {
+            val amphipodType = positions[i] ?: continue
+
+            when (amphipodType) {
+                AmphipodType.Amber -> {
+                    val distance = configuration.transitions[i]!!.find { it.destination == configuration.finalHeuristicValues[0][asFound] }?.distance ?:0
+                    result += (distance * AmphipodType.Amber.movementCost)
+                    asFound++
+                }
+                AmphipodType.Bronze -> {
+                    val distance = configuration.transitions[i]!!.find { it.destination == configuration.finalHeuristicValues[1][bsFound] }?.distance ?:0
+                    result += (distance * AmphipodType.Bronze.movementCost)
+                    bsFound++
+                }
+                AmphipodType.Copper -> {
+                    val distance = configuration.transitions[i]!!.find { it.destination == configuration.finalHeuristicValues[2][csFound] }?.distance ?:0
+                    result += (distance * AmphipodType.Copper.movementCost)
+                    csFound++
+                }
+                AmphipodType.Desert -> {
+                    val distance = configuration.transitions[i]!!.find { it.destination == configuration.finalHeuristicValues[3][dsFound] }?.distance ?:0
+                    result += (distance * AmphipodType.Desert.movementCost)
+                    dsFound++
+                }
+            }
+        }
+        return result / 4
+    }
+
     //region override equals and hashcode so data class works as expected
 
     override fun equals(other: Any?): Boolean {
@@ -182,6 +215,13 @@ internal object Part1Configuration : Configuration() {
         null, null,
         null, null, null, null, null, null, null,
         null, null
+    )
+
+    override val finalHeuristicValues: Array<IntArray> = arrayOf(
+        intArrayOf(0, 1), //Amber
+        intArrayOf(2, 3), //Bronze
+        intArrayOf(3, 4), //Copper
+        intArrayOf(4, 5), //Desert
     )
 
     init {
@@ -274,6 +314,13 @@ internal object Part2Configuration : Configuration() {
         null, null
     )
 
+    override val finalHeuristicValues: Array<IntArray> = arrayOf(
+        intArrayOf(0, 1, 2, 3), //Amber
+        intArrayOf(4, 5, 6, 7), //Bronze
+        intArrayOf(8, 9, 10, 11), //Copper
+        intArrayOf(12, 13, 14, 15), //Desert
+    )
+
     init {
         val rooms = (0..15).toList()
         val visitableHallwaySpaces = listOf(16,17,19,21,23,25,26)
@@ -306,21 +353,18 @@ internal object Part2Configuration : Configuration() {
         AmphipodType.Desert to setOf(12,13,14,15)
     )
 
+    private val roomRanges = arrayOf(0..3, 4..7, 8..11, 12..15)
     override fun isLegalRoomTransition(destination: Int, amphipod: AmphipodType, positions: Array<AmphipodType?>) : Boolean {
         if (destination > 15) {
             return true // we don't care about hallways
         }
 
         //we already know the destination is empty, or we wouldn't have gotten this far. just check the other spaces in the room
-        val otherPositionsInRoom = listOf(
-            (destination / 4),
-            (destination /4) + 1,
-            (destination / 4) + 2,
-            (destination /4) + 3
-        ).filterIndexed{ index, _ -> index != destination % 4}
+
+        val otherPositionsInRoom = roomRanges.find { destination in it }!!.filter { it != destination }
         otherPositionsInRoom.forEach { otherPositionInRoom ->
             if (positions[otherPositionInRoom] != null && positions[otherPositionInRoom] != amphipod) {
-                return false //there are two different types so we know one of them is wrong
+                return false //there are two different types being considered for the room, so we know one of them is wrong
             }
         }
         return destination in legalRoomIds[amphipod]!!
@@ -353,4 +397,6 @@ internal abstract class Configuration {
             .map { path + it }
             .firstNotNullOfOrNull { findPath(it, destination) }
     }
+
+    internal abstract val finalHeuristicValues: Array<IntArray>
 }
