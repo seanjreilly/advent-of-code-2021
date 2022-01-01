@@ -31,7 +31,7 @@ fun part1(input: List<String>): Long {
             //when there's a small x value it's combined with the previous y
             val popped = stack.pop()
             val xPlusOldY = popped.value + parametersForIndex.xRegisterValue
-            //solve by finding the largest digit that can be added to x + y and be within 1 ..9
+            //solve by finding the largest digit that can be added to x + y and be within 1 to 9
             val solvedDigit = (1..9).filter { it + xPlusOldY in 1..9 }.maxOrNull()!!
             result[popped.sourceIndex] = solvedDigit
             result[index] = solvedDigit + xPlusOldY
