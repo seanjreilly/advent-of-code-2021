@@ -82,4 +82,11 @@ class Day24Test {
         val monadProgram = parse(input)
         assert(monad(part1(input), monadProgram))
     }
+
+    @Test
+    fun `the number returned by part 2 should pass when executed by the monad program`() {
+        val input = readInput("Day24")
+        val monadProgram = parse(input)
+        assert(monad(part2(input), monadProgram))
+    }
 }

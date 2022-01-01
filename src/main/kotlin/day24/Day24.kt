@@ -18,8 +18,11 @@ fun part1(input: List<String>): Long {
     return solveSerialNumber(monadProgram, operation)
 }
 
-fun part2(input: List<String>): Int {
-    return input.size
+fun part2(input: List<String>): Long {
+    val monadProgram = parse(input)
+    val operation = List<Int>::minOrNull
+
+    return solveSerialNumber(monadProgram, operation)
 }
 
 private fun solveSerialNumber(
@@ -45,7 +48,7 @@ private fun solveSerialNumber(
             //when there's a small x value it's combined with the previous y
             val popped = stack.pop()
             val xPlusOldY = popped.value + parametersForIndex.xRegisterValue
-            //solve by finding the largest digit that can be added to x + y and be within 1 to 9
+            //solve by finding the largest (or smallest) digit that can be added to x + y and be within 1 to 9
             val solvedDigit = operation((1..9).filter { it + xPlusOldY in 1..9 })!!
             result[index] = solvedDigit + xPlusOldY
             result[popped.sourceIndex] = solvedDigit
