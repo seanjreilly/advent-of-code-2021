@@ -3,6 +3,7 @@ package day24
 import java.util.ArrayDeque
 import utils.readInput
 import kotlin.IllegalArgumentException
+import kotlin.reflect.KFunction1
 
 fun main() {
     val input = readInput("Day24")
@@ -12,6 +13,19 @@ fun main() {
 
 fun part1(input: List<String>): Long {
     val monadProgram = parse(input)
+    val operation = List<Int>::maxOrNull
+
+    return solveSerialNumber(monadProgram, operation)
+}
+
+fun part2(input: List<String>): Int {
+    return input.size
+}
+
+private fun solveSerialNumber(
+    monadProgram: Program,
+    operation: KFunction1<List<Int>, Int?>
+): Long {
     //program is repeated blocks of 18 instructions
     val parameters = monadProgram.chunked(18).map { instructions ->
         Parameters(
@@ -32,16 +46,12 @@ fun part1(input: List<String>): Long {
             val popped = stack.pop()
             val xPlusOldY = popped.value + parametersForIndex.xRegisterValue
             //solve by finding the largest digit that can be added to x + y and be within 1 to 9
-            val solvedDigit = (1..9).filter { it + xPlusOldY in 1..9 }.maxOrNull()!!
-            result[popped.sourceIndex] = solvedDigit
+            val solvedDigit = operation((1..9).filter { it + xPlusOldY in 1..9 })!!
             result[index] = solvedDigit + xPlusOldY
+            result[popped.sourceIndex] = solvedDigit
         }
     }
-    return result.map { it.toString() }.joinToString("").toLong()
-}
-
-fun part2(input: List<String>): Int {
-    return input.size
+    return result.joinToString("") { it.toString() }.toLong()
 }
 
 class Parameters(val xRegisterValue: Int, val yRegisterValue: Int)
