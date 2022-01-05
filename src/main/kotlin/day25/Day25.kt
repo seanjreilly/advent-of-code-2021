@@ -7,7 +7,7 @@ import utils.readInput
 fun main() {
     val input = readInput("Day25")
     println(part1(input))
-    println(part2(input))
+    //no part 2 today
 }
 
 fun part1(input: List<String>): Int {
@@ -19,10 +19,6 @@ fun part1(input: List<String>): Int {
         steps++
     } while (result.second > 0)
     return steps
-}
-
-fun part2(input: List<String>): Int {
-    return input.size
 }
 
 internal fun parse(input: List<String>): CucumberGrid {
