@@ -49,31 +49,32 @@ internal data class CucumberGrid(private val points: Map<Point, Cucumber>, val w
         return points[point]
     }
 
+    private fun destination(entry: Map.Entry<Point, Cucumber>): Point {
+        return when (entry.value) {
+            EAST_FACING -> Point((entry.key.x + 1) % width, entry.key.y)
+            SOUTH_FACING -> Point(entry.key.x, (entry.key.y + 1) % height)
+        }
+    }
+
     fun step(): Pair<CucumberGrid, Int> {
         var cucumbersMoved = 0
 
         fun partStep(previousGrid: Map<Point, Cucumber>, expectedDirection: Cucumber): Map<Point, Cucumber> {
-            return previousGrid.asIterable().associate {
+            return previousGrid.entries.associate {
                 if (it.value == expectedDirection) {
                     val destination = destination(it)
-                    val newPoint = if (previousGrid[destination] == null) { cucumbersMoved++; destination } else it.key
-                    Pair(newPoint, it.value)
-                } else {
-                    Pair(it.key, it.value)
+                    if (previousGrid[destination] == null) {
+                        cucumbersMoved++
+                        return@associate Pair(destination, it.value)
+                    }
                 }
+                Pair(it.key, it.value)
             }
         }
 
         val pointsAfterPartA = partStep(points, EAST_FACING)
         val pointsAfterPartB = partStep(pointsAfterPartA, SOUTH_FACING)
         return Pair(CucumberGrid(pointsAfterPartB, width, height), cucumbersMoved)
-    }
-
-    private fun destination(entry: Map.Entry<Point, Cucumber>): Point {
-        return when (entry.value) {
-            EAST_FACING -> Point((entry.key.x + 1) % width, entry.key.y)
-            SOUTH_FACING -> Point(entry.key.x, (entry.key.y + 1) % height)
-        }
     }
 }
 
