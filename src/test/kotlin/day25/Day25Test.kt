@@ -19,4 +19,69 @@ class Day25Test {
         assert(grid[Point(0,1)] == Cucumber.SOUTH_FACING)
         assert(grid.count() == 2)
     }
+    
+    @Test
+    fun `step should move unblocked east facing cucumbers one step to the east`() {
+        val grid = parse("...>>>>>...".lines())
+        val expectedResult = parse("...>>>>.>..".lines())
+
+        val result: CucumberGrid = grid.step()
+
+        assert(result != grid)
+        assert(result == expectedResult)
+    }
+
+    @Test
+    fun `step should move unblocked south facing cucumbers one step to the south after east facing cucumbers have moved`() {
+        val input = """
+            ..........
+            .>v....v..
+            .......>..
+            ..........
+        """.trimIndent().lines()
+
+        val expectedResult = """
+            ..........
+            .>........
+            ..v....v>.
+            ..........
+        """.trimIndent().lines()
+
+        val grid = parse(input)
+
+        val result: CucumberGrid = grid.step()
+
+        assert(result != grid)
+        assert(result == parse(expectedResult))
+    }
+
+    @Test
+    fun `step should wrap cucumbers around the right and bottom sides of the grid when they move`() {
+        val input = """
+            ...>...
+            .......
+            ......>
+            v.....>
+            ......>
+            .......
+            ..vvv..
+        """.trimIndent().lines()
+
+        val expectedResult = """
+            ..vv>..
+            .......
+            >......
+            v.....>
+            >......
+            .......
+            ....v..
+        """.trimIndent().lines()
+
+        val grid = parse(input)
+
+        val result: CucumberGrid = grid.step()
+
+        assert(result != grid)
+        assert(result == parse(expectedResult))
+    }
 }
