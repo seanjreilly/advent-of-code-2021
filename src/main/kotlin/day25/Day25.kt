@@ -11,7 +11,14 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-    return input.size
+    var grid = parse(input)
+    var steps = 0
+    do {
+        val result = grid.step()
+        grid = result.first
+        steps++
+    } while (result.second > 0)
+    return steps
 }
 
 fun part2(input: List<String>): Int {
@@ -46,12 +53,14 @@ internal data class CucumberGrid(private val points: Map<Point, Cucumber>, val w
         return points[point]
     }
 
-    fun step(): CucumberGrid {
+    fun step(): Pair<CucumberGrid, Int> {
+        var cucumbersMoved = 0
+
         fun partStep(previousGrid: Map<Point, Cucumber>, expectedDirection: Cucumber): Map<Point, Cucumber> {
             return previousGrid.asIterable().associate {
                 if (it.value == expectedDirection) {
                     val destination = destination(it)
-                    val newPoint = if (previousGrid[destination] == null) destination else it.key
+                    val newPoint = if (previousGrid[destination] == null) { cucumbersMoved++; destination } else it.key
                     Pair(newPoint, it.value)
                 } else {
                     Pair(it.key, it.value)
@@ -61,7 +70,7 @@ internal data class CucumberGrid(private val points: Map<Point, Cucumber>, val w
 
         val pointsAfterPartA = partStep(points, EAST_FACING)
         val pointsAfterPartB = partStep(pointsAfterPartA, SOUTH_FACING)
-        return CucumberGrid(pointsAfterPartB, width, height)
+        return Pair(CucumberGrid(pointsAfterPartB, width, height), cucumbersMoved)
     }
 
     private fun destination(entry: Map.Entry<Point, Cucumber>): Point {

@@ -25,7 +25,7 @@ class Day25Test {
         val grid = parse("...>>>>>...".lines())
         val expectedResult = parse("...>>>>.>..".lines())
 
-        val result: CucumberGrid = grid.step()
+        val result: CucumberGrid = grid.step().first
 
         assert(result != grid)
         assert(result == expectedResult)
@@ -49,7 +49,7 @@ class Day25Test {
 
         val grid = parse(input)
 
-        val result: CucumberGrid = grid.step()
+        val result: CucumberGrid = grid.step().first
 
         assert(result != grid)
         assert(result == parse(expectedResult))
@@ -79,9 +79,26 @@ class Day25Test {
 
         val grid = parse(input)
 
-        val result: CucumberGrid = grid.step()
+        val result: CucumberGrid = grid.step().first
 
         assert(result != grid)
         assert(result == parse(expectedResult))
+    }
+
+    @Test
+    fun `part1 should construct a CucumberGrid and determine how many steps it will run until nothing moves`() {
+        val input = """
+            v...>>.vv>
+            .vv>>.vv..
+            >>.>v>...v
+            >>v>>.>.v.
+            v>v.vv.v..
+            >.>>..v...
+            .vv..>.>v.
+            v.v..>>v.v
+            ....v..v.>
+        """.trimIndent().lines()
+
+        assert(part1(input) == 58)
     }
 }
