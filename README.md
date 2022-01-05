@@ -1,25 +1,24 @@
 # advent-of-code-2021
 
-Welcome to the Advent of Code[^aoc] Kotlin project created by [seanjreilly][github] using the [Advent of Code Kotlin Template][template] delivered by JetBrains.
+Welcome to my [Advent of Code][aoc] [^aoc] solutions for 2021. If you want to see how I did any of it, please feel free. 
 
-In this repository, seanjreilly is about to provide solutions for the puzzles using [Kotlin][kotlin] language.
+I did all of the coding in JetBrain IntelliJ, using [Kotlin][kotlin], so I used the JetBrains [Advent of Code Kotlin Template][template] as a starting point.
+I used test-driven development because I always do (although it's a fun spare-time christmas project so I may have skimped on coverage).
 
-If you're stuck with Kotlin-specific questions or anything related to this template, check out the following resources:
+Unit tests are powered by [Junit](https://junit.org/junit5/), and I also use the excellent [Kotlin Power Assert plugin](https://github.com/bnorm/kotlin-power-assert) by [Brian Norman](https://github.com/bnorm) for assertions.
 
-- [Kotlin docs][docs]
-- [Kotlin Slack][slack]
-- Template [issue tracker][issues]
+I used almost[^almost] no libraries other than the kotlin stdlib. Solutions generally execute fairly quickly, although there's one or two that I wish would be faster. I didn't do any profiling.
 
+I didn't actually finish until early Jan 2022, because I have kids and a life. Sue me ;-).
 
 [^aoc]:
-    [Advent of Code][aoc] – An annual event of Christmas-oriented programming challenges started December 2015.
+    Advent of Code is an annual event of Christmas-oriented programming challenges started December 2015.
     Every year since then, beginning on the first day of December, a programming puzzle is published every day for twenty-four days.
     You can solve the puzzle and provide an answer using the language of your choice.
 
+[^almost]:
+    On day 16 I used Apache Commons compress for an easy way to read parts of a byte from an input stream.
+
 [aoc]: https://adventofcode.com
-[docs]: https://kotlinlang.org/docs/home.html
-[github]: https://github.com/seanjreilly
-[issues]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template/issues
 [kotlin]: https://kotlinlang.org
-[slack]: https://surveys.jetbrains.com/s3/kotlin-slack-sign-up
 [template]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template
